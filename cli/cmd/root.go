@@ -1,6 +1,3 @@
-/*
-Copyright © 2023 Saroj Regmi sarojregmi.official@gmail.com
-*/
 package cmd
 
 import (
@@ -12,10 +9,12 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "Envdost",
 	Short: "Envdost is a cli-application to manage your env",
-	Long: `Env dost is a cli-application that lets you manage your env files,
+	Long: `
+	Env dost is a cli-application that lets you manage your env files,
 	It helps you create a project and securely store the env files for those projects
 	in the one password vault which can be easily updated, managed, and accessed 
-	Whenever and where ever you are.`,
+	Whenever and where ever you are.
+	`,
 	
 }
 

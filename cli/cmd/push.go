@@ -15,6 +15,7 @@ var pushCmd = &cobra.Command{
 	Example: 
 	envdost push [File Name]
 	pushesh the provided file to the server.
+	
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("push called")
