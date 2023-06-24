@@ -8,9 +8,9 @@ import (
 
 var pushCmd = &cobra.Command{
 	Use:   "push",
-	Short: "Pushes the env files to the server",
+	Short: "Pushes the env file to the server",
 	Long: `
-	push is used to push the env files to the server.
+	push is used to push the env file to the server.
 
 	Example: 
 	envdost push [File Name]

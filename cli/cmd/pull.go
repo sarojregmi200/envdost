@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -13,13 +12,15 @@ import (
 // pullCmd represents the pull command
 var pullCmd = &cobra.Command{
 	Use:   "pull",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "pulls the env file from the server",
+	Long: `
+	pull is used to pull the env file from the server.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Example: 
+	envdost pull [File Name]
+	pullesh the provided file from the server.
+	
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("pull called")
 	},
