@@ -16,7 +16,7 @@ var rootCmd = &cobra.Command{
 	It helps you create a project and securely store the env files for those projects
 	in the one password vault which can be easily updated, managed, and accessed 
 	Whenever and where ever you are.`,
-	// Run: func(cmd *cobra.Command, args []string) { },
+	
 }
 
 
