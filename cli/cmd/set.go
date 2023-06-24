@@ -13,7 +13,8 @@ import (
 var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Used to set a project",
-	Long: `set is used to set the current project.
+	Long: `
+	set is used to set the current project.
 	
 	Example: 
 	envdost set [Project Name]
