@@ -1,7 +1,7 @@
 import express from "express";
 
 // importing the controllers
-import { register, login } from "./controllers/_authController.js";
+import { register, login } from "../controllers/_authController.js";
 
 // main entry point for all the routes
 const appRouter = express.Router();
