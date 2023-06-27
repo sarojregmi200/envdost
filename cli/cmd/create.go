@@ -17,8 +17,18 @@ var createCmd = &cobra.Command{
 	creates a project with the provided project name.
 
 	`,
+	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("create called")
+		fmt.Print("Creating ")
+
+		if len(args) > 1 {
+			fmt.Println("Projects :")
+		}else{
+			fmt.Println("Project :")
+		}
+		for i := 0 ; i< len(args); i++{
+			fmt.Println(args[i])
+		}
 	},
 }
 

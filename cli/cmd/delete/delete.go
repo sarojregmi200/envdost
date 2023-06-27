@@ -25,6 +25,6 @@ var deleteCmd = &cobra.Command{
 
 func init() {
 
-	// adding the delete command to the main root command
+	// adding the delete command to the main Root command
 	cmd.RootCmd.AddCommand(deleteCmd)
 }
