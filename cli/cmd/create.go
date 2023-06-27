@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 )
 
@@ -27,10 +28,30 @@ var createCmd = &cobra.Command{
 			fmt.Println("Project :")
 		}
 		for i := 0 ; i< len(args); i++{
-			fmt.Println(args[i])
+			projectName := args[i]
+			fmt.Println(projectName)
+			createProject(args[i])
 		}
 	},
 }
+
+// creates a new op vault with the name of the project
+// creates a new project in server with the name
+func createProject(projectName string) {
+	 projectId, error := uuid.NewUUID() 
+	 handleError(error)
+
+	 fmt.Println( projectName + " : " + projectId.String())
+}
+
+
+// accepts the error as param and panic if error occurs
+func handleError(e error){
+	if(e != nil){
+		panic(e)
+	 }
+}
+
 
 func init() {
 	RootCmd.AddCommand(createCmd)
