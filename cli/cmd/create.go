@@ -2,6 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
@@ -42,6 +45,25 @@ func createProject(projectName string) {
 	 handleError(error)
 
 	 fmt.Println( projectName + " : " + projectId.String())
+	 
+	 cmd:= exec.Command("op", "signin","-f", "--raw")
+
+	 cmd.Stdin = os.Stdin
+	 var out strings.Builder
+	 cmd.Stdout = &out
+	 cmd.Stderr = os.Stderr
+	 err:= cmd.Run()	 
+	 handleError(err)
+	 
+	 if cmd.ProcessState.Success() {
+		fmt.Println(out.String())
+		}
+
+
+
+
+
+	 
 }
 
 
