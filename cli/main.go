@@ -1,6 +1,9 @@
 package main
 
-import "github.com/sarojregmi200/envdost/cmd"
+import (
+	"envdost/cmd"
+	_ "envdost/cmd/delete"
+)
 
 func main() {
 	cmd.Execute()

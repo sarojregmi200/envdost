@@ -23,5 +23,5 @@ var pushCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(pushCmd)
+	RootCmd.AddCommand(pushCmd)
 }

@@ -1,4 +1,4 @@
-module github.com/sarojregmi200/envdost
+module envdost
 
 go 1.20
 
