@@ -2,9 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
-	"strings"
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
@@ -38,41 +35,29 @@ var createCmd = &cobra.Command{
 	},
 }
 
+
+
+
+
 // creates a new op vault with the name of the project
 // creates a new project in server with the name
 func createProject(projectName string) {
 	 projectId, error := uuid.NewUUID() 
-	 handleError(error)
-
+	if error != nil {
+		panic(error)
+	}
 	 fmt.Println( projectName + " : " + projectId.String())
-	 
-	 cmd:= exec.Command("op", "signin","-f", "--raw")
 
-	 cmd.Stdin = os.Stdin
-	 var out strings.Builder
-	 cmd.Stdout = &out
-	 cmd.Stderr = os.Stderr
-	 err:= cmd.Run()	 
-	 handleError(err)
-	 
-	 if cmd.ProcessState.Success() {
-		fmt.Println(out.String())
-		}
+	if loggedIn == false{
+		signinUser()
+
+		fmt.Println(LoggedInUser)
+	} 
 
 
-
-
-
-	 
+	 	 
 }
 
-
-// accepts the error as param and panic if error occurs
-func handleError(e error){
-	if(e != nil){
-		panic(e)
-	 }
-}
 
 
 func init() {
