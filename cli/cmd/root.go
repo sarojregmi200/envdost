@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"time"
 
 	"strings"
 
@@ -130,3 +131,25 @@ var LoggedInUser User = User{
 // contains the user session token
 var userSession  string = ""
 var loggedIn 	 bool = false // status of userlogin
+
+// a boolean that controls the animation loop
+var animate 	 bool = false
+
+
+func loadingAnimation (txt string) {
+	sequence  := [8] string {"⣾", "⣽", "⣻", "⢿" ,"⡿", "⣟", "⣯", "⣷"}  
+	var counter int = 0 // moves till the array index
+	for {
+		if animate == false {
+			break
+		}
+		fmt.Print( txt + " " + sequence[counter] + "\r")
+		counter++
+		if counter >= 7{
+			counter = 0
+		}
+		time.Sleep(500 * time.Millisecond) // pauses the loop for 500 ms
+		// to create a smooth animation
+	}
+} 
+

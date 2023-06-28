@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os/exec"
 
-	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 )
 
@@ -20,17 +21,9 @@ var createCmd = &cobra.Command{
 	`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Print("Creating ")
-
-		if len(args) > 1 {
-			fmt.Println("Projects :")
-		}else{
-			fmt.Println("Project :")
-		}
 		for i := 0 ; i< len(args); i++{
-			projectName := args[i]
-			fmt.Println(projectName)
-			createProject(args[i])
+			projectName := args[i] 
+			createProject(projectName)
 		}
 	},
 }
@@ -42,23 +35,22 @@ var createCmd = &cobra.Command{
 // creates a new op vault with the name of the project
 // creates a new project in server with the name
 func createProject(projectName string) {
-	 projectId, error := uuid.NewUUID() 
-	if error != nil {
-		panic(error)
-	}
-	 fmt.Println( projectName + " : " + projectId.String())
-
 	if loggedIn == false{
-		signinUser()
-
-		fmt.Println(LoggedInUser)
+		signinUser() // will set the session id as well
 	} 
+	// creating one password vault
+	cmd:= exec.Command("op", "vault", "create", projectName, "--session", userSession)
+	err := cmd.Run()
+	if err != nil{
+		log.Panicln("Error occured while creating "+ projectName + "project")
+		fmt.Println(err)
+	}
 
-
+	
+	animate = true // starting the animation	
+	loadingAnimation("Creating " + projectName + " project :")
 	 	 
 }
-
-
 
 func init() {
 	RootCmd.AddCommand(createCmd)
