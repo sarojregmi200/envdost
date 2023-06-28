@@ -41,7 +41,7 @@ func init() {
 
 
 // used to signin the user if it is not signin
-func signinUser  () User{
+func signinUser () User{
 	
 	// if user is logged in return that
 	if loggedIn {
@@ -50,7 +50,6 @@ func signinUser  () User{
 
 	// one password singin command
 	signinCmd := exec.Command("op", "signin", "-f", "--raw")
-
 	signinCmd.Stdin = os.Stdin
 	var out strings.Builder // creating a var out to store output
 	signinCmd.Stdout = &out 
@@ -64,6 +63,14 @@ func signinUser  () User{
 	}
 	userSession = out.String()
 
+	setLoggedInUser() // sets the loggedinuser global variable
+
+	return LoggedInUser
+}
+
+
+// sets the loggedin user details from the given session id 
+func setLoggedInUser () {
 	// gets the user info from the session token
 	tokenCommand, err := exec.Command("op", "whoami","--session", userSession).Output()
 	if(err != nil){
@@ -74,7 +81,10 @@ func signinUser  () User{
 
 	// parsing the output
 	var rawUserData string = string(tokenCommand[:])
+
+	loggedIn = true
 	lines := strings.Split(rawUserData, "\n") // extracting each line
+	// formatting the string and extracting loggedin user details
 	for _,v := range lines{
 		data := strings.Split(v, ": ") 
 		// checking if the data is valid or not
@@ -99,27 +109,24 @@ func signinUser  () User{
 			LoggedInUser.userid = value
 		}
 	}
-	loggedIn = true
-
-	return LoggedInUser
 }
-
 
 // user types and definitions
 type User struct {
-	shorthand string
-	url       string
-	email     string
-	userid    string
+	shorthand 	string
+	url       	string
+	email     	string
+	userid    	string
 }
 
+// loggedin user details
 var LoggedInUser User = User{
-	shorthand: "",
-	url:       "",
-	email:     "",
-	userid:    "",
+	shorthand:	 "",
+	url:      	 "",
+	email:   	 "",
+	userid:      "",
 }
 
 // contains the user session token
-var userSession string = ""
-var loggedIn bool = false // status of userlogin
+var userSession  string = ""
+var loggedIn 	 bool = false // status of userlogin
