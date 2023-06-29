@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"os/exec"
 
@@ -42,13 +41,11 @@ func createProject(projectName string) {
 	cmd:= exec.Command("op", "vault", "create", projectName, "--session", userSession)
 	err := cmd.Run()
 	if err != nil{
-		log.Panicln("Error occured while creating "+ projectName + "project")
-		fmt.Println(err)
+		log.Println("Error occured while creating "+ projectName + "project")
+		panic(err)
 	}
-
 	
-	animate = true // starting the animation	
-	loadingAnimation("Creating " + projectName + " project :")
+	// loadingAnimation("Creating " + projectName + " project :", cmd.Process.Pid)
 	 	 
 }
 

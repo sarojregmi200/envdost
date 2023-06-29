@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"syscall"
 	"time"
 
 	"strings"
@@ -136,13 +137,30 @@ var loggedIn 	 bool = false // status of userlogin
 var animate 	 bool = false
 
 
-func loadingAnimation (txt string) {
+func loadingAnimation (txt string, pid int) {
+	
+	// handling the process and animation state accordingly
+	process, err := os.FindProcess(pid)
+	fmt.Println("process id", pid)
+	if err != nil{
+		// it means process is not found or invalid pid 
+		animate = false
+		panic(err)
+	} 
+	// turning the animation on if the process exists
+	animate = true
 	sequence  := [8] string {"⣾", "⣽", "⣻", "⢿" ,"⡿", "⣟", "⣯", "⣷"}  
 	var counter int = 0 // moves till the array index
 	for {
-		if animate == false {
+		// for looking the process completion
+		err := process.Signal(syscall.Signal(0)) 
+		// sending 0 as a signal will not disturb the process if it exists if it doesnot then we can look the error msg
+		
+		if animate == false || err != nil  {
+			animate =  false
 			break
 		}
+
 		fmt.Print( txt + " " + sequence[counter] + "\r")
 		counter++
 		if counter >= 7{
