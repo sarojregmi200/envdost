@@ -35,10 +35,8 @@ var pushCmd = &cobra.Command{
 			}
 			fileName = arr[len(arr) - 1]
 
-			fmt.Println(fileName)
-
-			// processedData := processFile(filePath)
-			// uploadFile(processedData, filePath)
+			processedData := processFile(filePath)
+			uploadFile(processedData, filePath, fileName)
 		}
 	},
 }
@@ -89,7 +87,7 @@ func lineParser (lineNumber int , line string) string {
 	keyValueFilter := strings.Split(strings.TrimSpace(line), "=") 
 	if len(keyValueFilter) < 2{
 		// it is a comment
-		parsedLine = fmt.Sprintf("'%d. comment[text]=%s'",lineNumber, line)
+		parsedLine = fmt.Sprintf(" '%d. comment[text]=%s' ",lineNumber, line)
 		return parsedLine
 	}
 
@@ -102,27 +100,34 @@ func lineParser (lineNumber int , line string) string {
 	
 	valueCommentFilter := strings.Split(rawValue, "#")
 	if len(valueCommentFilter) < 2 {
-		parsedLine = fmt.Sprintf("'%d. %s[text]=%s'", lineNumber, key, rawValue )
+		parsedLine = fmt.Sprintf(" '%d. %s[text]=%s' ", lineNumber, key, rawValue )
 		return parsedLine
 	}
 	value := valueCommentFilter[0]
 	
 	comment := strings.Join(valueCommentFilter[1:], "")
 
-	parsedLine =fmt.Sprintf("'%d. %s[text]=%s' '%d. comment[text]=#%s'", lineNumber, key, value, lineNumber, comment)
+	parsedLine =fmt.Sprintf(" '%d. %s[text]=%s' '%d. comment[text]=#%s' ", lineNumber, key, value, lineNumber, comment)
 
 	return parsedLine
 }
 
 // calls the op and sets the vault 
 // with the given file details
-func uploadFile(data string, filename string){
+func uploadFile(data string, filePath string, fileName string){
 	//  op item create --title xyz --vault 6kxn74rc6njx7276ny4vqpcdr4 --session y5cX6xCKtOJ57p7ZQLytDFLIRbLWoaCGJ95ejGfP_Mw --category 'Secure Note' 'field1=value1' 'field2=value2'
 	
-	cmd := exec.Command("op","item", "create", "--title", filename, "--vault", SelectedProject.Id, "--session", UserSession, "--category", "'Secure Note'", data );
+	if !LoggedIn {
+		signinUser()
+	}
+	// file location in disk
+	diskLoc := fmt.Sprintf(" 'location[text]=%s' ", filePath)
+
+	cmd := exec.Command("op","item", "create", "--title", fileName, "--vault", SelectedProject.Id, "--session", UserSession, "--category", "'Secure Note'", data,  diskLoc);
 
 	err := cmd.Run()
 	if err !=nil{
+		fmt.Println("op","item", "create", "--title", fileName, "--vault", SelectedProject.Id, "--session", UserSession, "--category", "'Secure Note'", data,  diskLoc)
 		fmt.Println(err)
 	}
 }
