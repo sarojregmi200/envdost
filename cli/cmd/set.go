@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -18,10 +16,18 @@ var setCmd = &cobra.Command{
 	are performed in this project.
 
 	`,
+	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("set called")
+		setProject(args[0])
 	},
 }
+
+func setProject (projectName string) {
+
+	// cmd := exec.Command("op",)
+
+}
+
 
 func init() {
 	RootCmd.AddCommand(setCmd)

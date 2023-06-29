@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -74,60 +75,33 @@ func signinUser () User{
 // sets the loggedin user details from the given session id 
 func setLoggedInUser () {
 	// gets the user info from the session token
-	tokenCommand, err := exec.Command("op", "whoami","--session", userSession).Output()
+	tokenCommand, err := exec.Command("op", "whoami","--session", userSession, "--format=json").Output()
 	if(err != nil){
 		fmt.Println("Error while getting the user info")
 		log.Fatal(err)
 		
 	}
 
-	// parsing the output
-	var rawUserData string = string(tokenCommand[:])
-
-	loggedIn = true
-	lines := strings.Split(rawUserData, "\n") // extracting each line
-	// formatting the string and extracting loggedin user details
-	for _,v := range lines{
-		data := strings.Split(v, ": ") 
-		// checking if the data is valid or not
-
-		// filtering the unwanted things
-		if len(data) < 2{
-			continue
-		}
-		// extracting the key value and formatting
-		key := strings.ToLower(strings.ReplaceAll(data[0]," ", "")) 
-		value := strings.TrimSpace(data[1])
-		
-		// setting the logged in user
-		switch key{
-		case "shorthand":
-			LoggedInUser.shorthand = value
-		case "url":
-			LoggedInUser.url = value
-		case "email":
-			LoggedInUser.email = value
-		case "userid":
-			LoggedInUser.userid = value
-		}
+	// parsing the output 
+	parsingErr :=	json.Unmarshal(tokenCommand, &LoggedInUser)
+	
+	if parsingErr != nil{
+		fmt.Println(parsingErr)
 	}
+	loggedIn = true
 }
 
 // user types and definitions
 type User struct {
-	shorthand 	string
-	url       	string
-	email     	string
-	userid    	string
+	Shorthand 		string `json:"shorthand"`
+	Url       		string	`json:"url"`
+	Email     		string	`json:"email"`
+	User_uuid   	string	`json:"user_uuid"`
+	Account_uuid 	string	`json:"account_uuid"`
 }
 
 // loggedin user details
-var LoggedInUser User = User{
-	shorthand:	 "",
-	url:      	 "",
-	email:   	 "",
-	userid:      "",
-}
+var LoggedInUser User
 
 // contains the user session token
 var userSession  string = ""
