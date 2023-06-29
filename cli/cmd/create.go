@@ -30,11 +30,11 @@ var createCmd = &cobra.Command{
 // creates a new op vault with the name of the project
 // creates a new project in server with the name
 func createProject(projectName string) {
-	if loggedIn == false{
+	if LoggedIn == false{
 		signinUser() // will set the session id as well 
 	} 
 	// creating one password vault
-	cmd:= exec.Command("op", "vault", "create", projectName, "--session", userSession)
+	cmd:= exec.Command("op", "vault", "create", projectName, "--session", UserSession)
 	err := cmd.Run()
 	if err != nil{
 		log.Println("Error occured while creating "+ projectName + "project")
@@ -42,7 +42,7 @@ func createProject(projectName string) {
 	}
 	
 
-	// loadingAnimation("Creating " + projectName + " project :", cmd.Process.Pid)
+	// LoadingAnimation("Creating " + projectName + " project :", cmd.Process.Pid)
 	 	 
 }
 

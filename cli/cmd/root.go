@@ -47,7 +47,7 @@ func init() {
 func signinUser () User{
 	
 	// if user is logged in return that
-	if loggedIn {
+	if LoggedIn {
 		return LoggedInUser
 	}	
 
@@ -64,18 +64,18 @@ func signinUser () User{
 		fmt.Println("Error while signing up the user")
 		log.Fatal(err)
 	}
-	userSession = out.String()
+	UserSession = out.String()
 
-	setLoggedInUser() // sets the loggedinuser global variable
+	setLoggedInUser() // sets the LoggedInuser global variable
 
 	return LoggedInUser
 }
 
 
-// sets the loggedin user details from the given session id 
+// sets the LoggedIn user details from the given session id 
 func setLoggedInUser () {
 	// gets the user info from the session token
-	tokenCommand, err := exec.Command("op", "whoami","--session", userSession, "--format=json").Output()
+	tokenCommand, err := exec.Command("op", "whoami","--session", UserSession, "--format=json").Output()
 	if(err != nil){
 		fmt.Println("Error while getting the user info")
 		log.Fatal(err)
@@ -88,7 +88,7 @@ func setLoggedInUser () {
 	if parsingErr != nil{
 		fmt.Println(parsingErr)
 	}
-	loggedIn = true
+	LoggedIn = true
 }
 
 // user types and definitions
@@ -100,29 +100,30 @@ type User struct {
 	Account_uuid 	string	`json:"account_uuid"`
 }
 
-// loggedin user details
+// LoggedIn user details
 var LoggedInUser User
 
 // contains the user session token
-var userSession  string = ""
-var loggedIn 	 bool = false // status of userlogin
+var UserSession  string = ""
+var LoggedIn 	 bool = false // status of userlogin
+ 
 
 // a boolean that controls the animation loop
-var animate 	 bool = false
+var Animate 	 bool = false
 
 
-func loadingAnimation (txt string, pid int) {
+func LoadingAnimation (txt string, pid int) {
 	
 	// handling the process and animation state accordingly
 	process, err := os.FindProcess(pid)
 	fmt.Println("process id", pid)
 	if err != nil{
 		// it means process is not found or invalid pid 
-		animate = false
+		Animate = false
 		panic(err)
 	} 
 	// turning the animation on if the process exists
-	animate = true
+	Animate = true
 	sequence  := [8] string {"⣾", "⣽", "⣻", "⢿" ,"⡿", "⣟", "⣯", "⣷"}  
 	var counter int = 0 // moves till the array index
 	for {
@@ -130,8 +131,8 @@ func loadingAnimation (txt string, pid int) {
 		err := process.Signal(syscall.Signal(0)) 
 		// sending 0 as a signal will not disturb the process if it exists if it doesnot then we can look the error msg
 		
-		if animate == false || err != nil  {
-			animate =  false
+		if Animate == false || err != nil  {
+			Animate =  false
 			break
 		}
 
