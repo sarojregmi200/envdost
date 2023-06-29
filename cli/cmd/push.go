@@ -97,7 +97,7 @@ func lineParser (lineNumber int , line string) string {
 
 	// format
 	//  op item create --title xyz --vault 6kxn74rc6njx7276ny4vqpcdr4 --session y5cX6xCKtOJ57p7ZQLytDFLIRbLWoaCGJ95ejGfP_Mw --category 'Secure Note' 'field1=value1' 'field2=value2'
-	parsedLine =fmt.Sprintf("'%d. %s[text]=%s' 'comment=%s'", lineNumber, key, value, comment)
+	parsedLine =fmt.Sprintf("'%d. %s[text]=%s' '%d. comment[text]=#%s'", lineNumber, key, value, lineNumber, comment)
 
 
 	return parsedLine
