@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -22,8 +23,22 @@ var pushCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		for i:=0 ; i< len(args); i++{
-			var FileName string = args[i]
-			processFile(FileName)
+			var filePath string = args[i]
+
+			// actual name of the file
+			var fileName string
+			
+			// due to unix and windows system.
+			arr := strings.Split(filePath, "\\")
+			if  len(arr) < 2{
+				arr = strings.Split(fileName, "/")
+			}
+			fileName = arr[len(arr) - 1]
+
+			fmt.Println(fileName)
+
+			// processedData := processFile(filePath)
+			// uploadFile(processedData, filePath)
 		}
 	},
 }
@@ -32,14 +47,14 @@ var pushCmd = &cobra.Command{
 // processes each file and returns a string that
 // in a way it can be stored in the op vault as a item
 // item string with lines as feilds
-func processFile (filename string) string{
+func processFile (filePath string) string{
 	
 	var itemString string
 	
 	// opening the file
-	file, err := os.Open(filename)
+	file, err := os.Open(filePath)
 	if err != nil{
-		fmt.Println("Cannot find the file ", filename)
+		fmt.Println("Cannot find the file ", filePath)
 	} 
 	defer file.Close()
 
@@ -54,9 +69,8 @@ func processFile (filename string) string{
 		line := reader.Text()
 		// adding each line together for a item string
 		itemString += lineParser(i, line)
-
 	}
-	fmt.Println(itemString)
+
 	return itemString
 }
 
@@ -95,15 +109,23 @@ func lineParser (lineNumber int , line string) string {
 	
 	comment := strings.Join(valueCommentFilter[1:], "")
 
-	// format
-	//  op item create --title xyz --vault 6kxn74rc6njx7276ny4vqpcdr4 --session y5cX6xCKtOJ57p7ZQLytDFLIRbLWoaCGJ95ejGfP_Mw --category 'Secure Note' 'field1=value1' 'field2=value2'
 	parsedLine =fmt.Sprintf("'%d. %s[text]=%s' '%d. comment[text]=#%s'", lineNumber, key, value, lineNumber, comment)
-
 
 	return parsedLine
 }
 
+// calls the op and sets the vault 
+// with the given file details
+func uploadFile(data string, filename string){
+	//  op item create --title xyz --vault 6kxn74rc6njx7276ny4vqpcdr4 --session y5cX6xCKtOJ57p7ZQLytDFLIRbLWoaCGJ95ejGfP_Mw --category 'Secure Note' 'field1=value1' 'field2=value2'
+	
+	cmd := exec.Command("op","item", "create", "--title", filename, "--vault", SelectedProject.Id, "--session", UserSession, "--category", "'Secure Note'", data );
 
+	err := cmd.Run()
+	if err !=nil{
+		fmt.Println(err)
+	}
+}
 
 func init() {
 	// for testing purposes initializing a selected project
