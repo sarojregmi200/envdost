@@ -38,7 +38,6 @@ func setProject (projectName string) {
 
 	json.Unmarshal(data, &SelectedProject)
 
-	fmt.Println(SelectedProject)
 
 }
 

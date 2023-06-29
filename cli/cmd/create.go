@@ -30,6 +30,7 @@ var createCmd = &cobra.Command{
 // creates a new op vault with the name of the project
 // creates a new project in server with the name
 func createProject(projectName string) {
+	
 	if LoggedIn == false{
 		signinUser() // will set the session id as well 
 	} 
