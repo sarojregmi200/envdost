@@ -160,3 +160,10 @@ func LoadingAnimation (txt string, pid int) {
 	}
 } 
 
+// for the selected projects
+type Project struct {
+	Name 		string `json:"name"`
+	Id 			string `json:"id"`
+}	
+
+var SelectedProject Project
