@@ -46,10 +46,19 @@ func init() {
 // used to signin the user if it is not signin
 func signinUser () User{
 	
+	// checking if the user has loggedin session token in the evironment or not
+	previousLogin := os.Getenv("LOGIN_TOKEN")
+	if previousLogin != ""{ 
+		json.Unmarshal([]byte(previousLogin), &LoggedInUser)
+		return LoggedInUser // if user is already logged in no need to login again
+	}  
+
+
+
 	// if user is logged in return that
 	if LoggedIn {
 		return LoggedInUser
-	}	
+	}
 
 	// one password singin command
 	signinCmd := exec.Command("op", "signin", "-f", "--raw")
@@ -84,9 +93,14 @@ func setLoggedInUser () {
 
 	// parsing the output 
 	parsingErr :=	json.Unmarshal(tokenCommand, &LoggedInUser)
-	
 	if parsingErr != nil{
 		fmt.Println(parsingErr)
+	}
+
+	// storing the unparsed data in terminal for latter commands
+	errSettingEnv := os.Setenv("LOGIN_TOKEN", string(tokenCommand[:]))
+	if errSettingEnv != nil{
+		fmt.Println("Session storage for terminal is turned off", errSettingEnv)
 	}
 	LoggedIn = true
 }
