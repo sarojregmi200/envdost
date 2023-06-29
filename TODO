@@ -3,4 +3,5 @@ api:
 
 cli: 
   ☐ Fix the loading animation to run till the task exists
-  
+  ☐ add the selected project to the terminal session
+  ☐ adding the logined user to the terminal session
