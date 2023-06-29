@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -18,10 +21,94 @@ var pushCmd = &cobra.Command{
 	
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("push called")
+		for i:=0 ; i< len(args); i++{
+			var FileName string = args[i]
+			processFile(FileName)
+		}
 	},
 }
 
+
+// processes each file and returns a string that
+// in a way it can be stored in the op vault as a item
+// item string with lines as feilds
+func processFile (filename string) string{
+	
+	var itemString string
+	
+	// opening the file
+	file, err := os.Open(filename)
+	if err != nil{
+		fmt.Println("Cannot find the file ", filename)
+	} 
+	defer file.Close()
+
+	// creating a new scanner to read the file
+	reader := bufio.NewScanner(file)
+
+	// line number 
+	i:= 0
+	// reading file line by line
+	for reader.Scan(){
+		i = i+1
+		line := reader.Text()
+		// adding each line together for a item string
+		itemString += lineParser(i, line)
+
+	}
+	fmt.Println(itemString)
+	return itemString
+}
+
+
+// parses individual line and returns a string which 
+// represents each field of a item in op vault
+func lineParser (lineNumber int , line string) string {
+	if strings.TrimSpace(line) == ""{return "" }
+ 
+	var parsedLine string
+	// trim the spaces
+	// split by equals sign ( = ) anything not splited is comment 
+	// anything before equals is the key, and anything after equals is value
+	// split by # anything before the # is pure value, anything after is comment
+
+	keyValueFilter := strings.Split(strings.TrimSpace(line), "=") 
+	if len(keyValueFilter) < 2{
+		// it is a comment
+		parsedLine = fmt.Sprintf("'%d. comment[text]=%s'",lineNumber, line)
+		return parsedLine
+	}
+
+	// left side of the = is key
+	key := keyValueFilter[0]
+
+	// unfiltered value i.e value which may contain comment
+	// [1:] slices the array removing the first element
+	rawValue := strings.Join(keyValueFilter[1:], "")
+	
+	valueCommentFilter := strings.Split(rawValue, "#")
+	if len(valueCommentFilter) < 2 {
+		parsedLine = fmt.Sprintf("'%d. %s[text]=%s'", lineNumber, key, rawValue )
+		return parsedLine
+	}
+	value := valueCommentFilter[0]
+	
+	comment := strings.Join(valueCommentFilter[1:], "")
+
+	// format
+	//  op item create --title xyz --vault 6kxn74rc6njx7276ny4vqpcdr4 --session y5cX6xCKtOJ57p7ZQLytDFLIRbLWoaCGJ95ejGfP_Mw --category 'Secure Note' 'field1=value1' 'field2=value2'
+	parsedLine =fmt.Sprintf("'%d. %s[text]=%s' 'comment=%s'", lineNumber, key, value, comment)
+
+
+	return parsedLine
+}
+
+
+
 func init() {
+	// for testing purposes initializing a selected project
+	SelectedProject.Id = "6kxn74rc6njx7276ny4vqpcdr4"
+	SelectedProject.Name = "abc"
+
 	RootCmd.AddCommand(pushCmd)
 }
