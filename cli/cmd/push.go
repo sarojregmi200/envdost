@@ -126,9 +126,10 @@ func uploadFile(data []string, filePath string, fileName string){
 	addItemCmd := cmdRunner.NewCmd( "op",args...  );
  
  	status := <- addItemCmd.Start()
-	fmt.Println(status)
-
-	fmt.Println(data)
+	if status.Error != nil{
+		fmt.Println("Error occured while uploading file content")
+	}
+	fmt.Printf("\nFile %s successfully uploaded under project %s \n", fileName , SelectedProject.Name)
 }
 
 func init() {

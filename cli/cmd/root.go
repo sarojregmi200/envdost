@@ -143,7 +143,6 @@ var LoggedIn 	 bool = false // status of userlogin
 // a boolean that controls the animation loop
 var Animate 	 bool = false
 
-
 func LoadingAnimation (txt string, pid int) {
 	
 	// handling the process and animation state accordingly
@@ -185,8 +184,6 @@ type Project struct {
 }	
 
 var SelectedProject Project
-
-
 
 // fetches the value from the environment variable and returns the value and error
 func getEnv(envVariable string) (string,error){
