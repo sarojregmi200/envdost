@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"log"
-	"os/exec"
+	"fmt"
 
+	cmdRunner "github.com/go-cmd/cmd"
 	"github.com/spf13/cobra"
 )
 
@@ -35,14 +35,9 @@ func createProject(projectName string) {
 		signinUser() // will set the session id as well 
 	} 
 	// creating one password vault
-	cmd:= exec.Command("op", "vault", "create", projectName, "--session", UserSession)
-	err := cmd.Run()
-	if err != nil{
-		log.Println("Error occured while creating "+ projectName + "project")
-		panic(err)
-	}
-	
-
+	cmd:= cmdRunner.NewCmd("op", "vault", "create", projectName, "--session", UserSession)
+	cmd.Start()	
+	fmt.Println(UserSession)
 	// LoadingAnimation("Creating " + projectName + " project :", cmd.Process.Pid)
 	 	 
 }

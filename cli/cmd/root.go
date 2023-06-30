@@ -6,12 +6,14 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"runtime"
 	"syscall"
 	"time"
 
 	"strings"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/sys/windows/registry"
 )
 
 var RootCmd = &cobra.Command{
@@ -45,15 +47,38 @@ func init() {
 
 // used to signin the user if it is not signin
 func signinUser () User{
-	
-	// checking if the user has loggedin session token in the evironment or not
-	previousLogin := os.Getenv("LOGIN_TOKEN")
+
+	// contains data from previous login
+	var previousLogin string
+	// checking the users os first
+	if runtime.GOOS == "windows"{
+		key, err := registry.OpenKey(registry.LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`, registry.ALL_ACCESS)
+	if err != nil {
+		fmt.Println("Failed to open registry key:", err)
+	}
+	defer key.Close()
+
+	// getting the env variable
+	loginToken, _,err := key.GetStringValue("LOGIN_TOKEN")
+	sessionToken, _, err:= key.GetStringValue("USER_SESSION")
+	if err != nil {
+		fmt.Println("Failed to set environment variable:", err)
+	}
+	// setting the env variable to the previous login 
+	previousLogin = loginToken
+	UserSession = sessionToken
+	}else{
+		previousLogin = os.Getenv("LOGIN_TOKEN")
+		UserSession = os.Getenv("USER_SESSION")
+	}
+
 	if previousLogin != ""{ 
 		json.Unmarshal([]byte(previousLogin), &LoggedInUser)
+		LoggedIn = true
 		return LoggedInUser // if user is already logged in no need to login again
 	}  
 
-
+	
 
 	// if user is logged in return that
 	if LoggedIn {
@@ -87,8 +112,7 @@ func setLoggedInUser () {
 	tokenCommand, err := exec.Command("op", "whoami","--session", UserSession, "--format=json").Output()
 	if(err != nil){
 		fmt.Println("Error while getting the user info")
-		log.Fatal(err)
-		
+		log.Fatal(err)	
 	}
 
 	// parsing the output 
@@ -97,11 +121,32 @@ func setLoggedInUser () {
 		fmt.Println(parsingErr)
 	}
 
-	// storing the unparsed data in terminal for latter commands
-	errSettingEnv := os.Setenv("LOGIN_TOKEN", string(tokenCommand[:]))
-	if errSettingEnv != nil{
-		fmt.Println("Session storage for terminal is turned off", errSettingEnv)
+
+	// setting the loggedin user in the env
+	if runtime.GOOS == "windows"{
+		key, err := registry.OpenKey(registry.LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`, registry.ALL_ACCESS)
+	if err != nil {
+		fmt.Println("Failed to open registry key:", err)
 	}
+	defer key.Close()
+
+	// getting the env variable
+	tokenError := key.SetStringValue("LOGIN_TOKEN", string(tokenCommand[:]))
+	sessionError := key.SetStringValue("USER_SESSION", UserSession)
+
+	if tokenError != nil || sessionError != nil {
+		fmt.Println("Failed to set environment variable:", tokenError, sessionError)
+	}
+	}else{
+
+	// for unix
+	tokenError := os.Setenv("LOGIN_TOKEN", string(tokenCommand[:]))
+	sessionError := os.Setenv("USER_SESSION", UserSession)
+	if tokenError != nil || sessionError != nil{
+		fmt.Println("Session storage for terminal is turned off", tokenError)
+	}
+	}
+
 	LoggedIn = true
 }
 
