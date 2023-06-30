@@ -40,9 +40,11 @@ func createProject(projectName string) {
 	status := <-statusChannel
 	 
 	if status.Error != nil{	
-		fmt.Println("error")
+		fmt.Println("Error while creating the project ")
+		panic(projectName)
 	}
 	
+	fmt.Printf("\nProject %s created successfully.\n", projectName)
 	// LoadingAnimation("Creating " + projectName + " project :", cmd.Process.Pid)
 	 	 
 }

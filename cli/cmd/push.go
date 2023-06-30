@@ -52,7 +52,6 @@ var pushCmd = &cobra.Command{
 // in a way it can be stored in the op vault as a item
 // item string with lines as feilds
 func processFile (filePath string) []string{
-	
 	var itemString []string 
 	
 	// opening the file
@@ -87,7 +86,7 @@ func lineParser (lineNumber int , line string) []string {
 	keyValueFilter := strings.Split(strings.TrimSpace(line), "=") 
 	if len(keyValueFilter) < 2{
 		// it is a comment
-		parsedLine = append(parsedLine , fmt.Sprintf(" %d. comment[text]=%s , ",lineNumber, line))
+		parsedLine = append(parsedLine , fmt.Sprintf(" %d. comment[text]=%s  ",lineNumber, line))
 		return parsedLine
 	}
 
@@ -118,7 +117,6 @@ func uploadFile(data []string, filePath string, fileName string){
 	// file location in disk
 	diskLoc := fmt.Sprintf(` location[text]=%s `, filePath)
 
-
 	var args [] string
 	args = append(args, "item", "create", "--title", fileName, "--vault", SelectedProject.Id, "--session", UserSession, "--category", "Secure Note" , diskLoc)
 
@@ -126,10 +124,8 @@ func uploadFile(data []string, filePath string, fileName string){
 
 	addItemCmd := cmdRunner.NewCmd( "op",args...  );
  
-	
  	status := <- addItemCmd.Start()
 	fmt.Println(status)
-
 
 	fmt.Println(data)
 }

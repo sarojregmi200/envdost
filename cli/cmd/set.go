@@ -38,6 +38,7 @@ func setProject (projectName string) {
 
 	// setting the selected project to env
 	setEnv("SELECTED_PROJECT", string(data[:]))
+	fmt.Printf("\nProject %s is selected successfully\n", projectName);
 
 	json.Unmarshal(data, &SelectedProject)
 }

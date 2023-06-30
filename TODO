@@ -4,4 +4,6 @@ api:
 cli: 
   ☐ Fix the loading animation to run till the task exists
   ☐ add the selected project to the terminal session
-  ☐ adding the logined user to the terminal session
+  ✔ adding the logined user to the terminal session @done(23-06-30 16:34)
+  ✔ refactoring the addind and getting env variable process @started(23-06-30 16:34) @done(23-06-30 17:27) @lasted(53m37s)
+  ☐ implement helpful logs and msg 
