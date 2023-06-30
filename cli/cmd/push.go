@@ -46,7 +46,10 @@ var pushCmd = &cobra.Command{
 			}
 			fileName = arr[len(arr) - 1]
 
-			processedData := processFile(filePath)
+			processedData := processFile(filePath, fileName)
+			if processedData == nil{
+				continue
+			}
 			uploadFile(processedData, filePath, fileName)
 		}
 	},
@@ -56,14 +59,21 @@ var pushCmd = &cobra.Command{
 // processes each file and returns a string that
 // in a way it can be stored in the op vault as a item
 // item string with lines as feilds
-func processFile (filePath string) []string{
+func processFile (filePath string, fileName string) []string{
+	// adding animation for the file processing
+
+	fmt.Println("Processing file "+ fileName)
 	var itemString []string 
 	
 	// opening the file
 	file, err := os.Open(filePath)
+	if file == nil{
+		fmt.Println("Cannot find the file", fileName)
+		return nil
+	}
 	if err != nil{
-		fmt.Println("Cannot find the file ", filePath)
-	} 
+		fmt.Println("Cannot find the file", filePath)
+	}
 	defer file.Close()
 
 	// creating a new scanner to read the file
@@ -78,6 +88,7 @@ func processFile (filePath string) []string{
 		// adding each line together for a item string
 		itemString =append(itemString, lineParser(i, line)...)
 	}
+	fmt.Println("Completed processing "+ fileName)
 	return itemString
 }
 
@@ -127,13 +138,21 @@ func uploadFile(data []string, filePath string, fileName string){
 
 	args = append(args, data...)
 
+	// animation 
+	Animate = true
+	go LoadingAnimation("Uploading "+ fileName)
+
 	addItemCmd := cmdRunner.NewCmd( "op",args...  );
  
  	status := <- addItemCmd.Start()
 	if status.Error != nil{
 		fmt.Println("Error occured while uploading file content")
 	}
-	fmt.Printf("\nFile %s successfully uploaded under project %s \n", fileName , SelectedProject.Name)
+
+	if status.Complete{
+		Animate = false
+		fmt.Printf("\nFile %s successfully uploaded under project %s \n", fileName , SelectedProject.Name)
+	}
 }
 
 func init() {

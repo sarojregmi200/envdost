@@ -134,7 +134,7 @@ func LoadingAnimation (txt string) {
 	for {
 		if Animate == false {
 			Animate =  false
-			break
+			return
 		}
 		fmt.Print( txt + " " + sequence[counter] + "\r")
 		counter++
