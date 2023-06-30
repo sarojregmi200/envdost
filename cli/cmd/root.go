@@ -126,16 +126,9 @@ var LoggedIn 	 bool = false // status of userlogin
 // a boolean that controls the animation loop
 var Animate 	 bool = false
 
-func LoadingAnimation (txt string, pid int) {
+func LoadingAnimation (txt string, processChannel string) {
 	
-	// handling the process and animation state accordingly
-	process, err := os.FindProcess(pid)
-	fmt.Println("process id", pid)
-	if err != nil{
-		// it means process is not found or invalid pid 
-		Animate = false
-		panic(err)
-	} 
+	// handeling the process
 	// turning the animation on if the process exists
 	Animate = true
 	sequence  := [8] string {"⣾", "⣽", "⣻", "⢿" ,"⡿", "⣟", "⣯", "⣷"}  

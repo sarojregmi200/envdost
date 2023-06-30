@@ -36,15 +36,14 @@ func createProject(projectName string) {
 	cmd:= cmdRunner.NewCmd("op", "vault", "create", projectName, "--session", UserSession)
 	statusChannel := cmd.Start()
 
-	status := <-statusChannel
-	 
-	if status.Error != nil{	
-		fmt.Println("Error while creating the project ")
-		panic(projectName)
-	}
-	
 	fmt.Printf("\nProject %s created successfully.\n", projectName)
-	// LoadingAnimation("Creating " + projectName + " project :", cmd.Process.Pid)
+	// LoadingAnimation("Creating " + projectName + " project :", )
+
+	// for handeling error
+	status := <-statusChannel
+	if status.Error != nil{	
+		fmt.Println("Error while creating the project ", projectName)
+	}
 }
 
 func init() {
