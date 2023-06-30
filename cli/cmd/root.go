@@ -38,7 +38,6 @@ func Execute() {
 
 var ReferenceMode bool = false
 func init() {
-	RootCmd.Flags().BoolVarP(&ReferenceMode,"refmode" ,"r", false, "pulls env file in reference mode.")
 }
 
 // used to signin the user if it is not signin

@@ -97,6 +97,7 @@ func pullFile (fileName string, pullAll bool){
 }
 
 func init() {
+	pullCmd.Flags().BoolVarP(&ReferenceMode,"refmode" ,"r", false, "pulls env file in reference mode.")
 	RootCmd.AddCommand(pullCmd)
 }
 
@@ -108,6 +109,7 @@ type File struct{
 
 var files[] File
 
+// fetches the file content and creates the file
 func createFile (currentFile File){
 
 	fetchDataCommand := cmdRunner.NewCmd("op","item", "get", currentFile.Id, "--vault", SelectedProject.Id, "--session", UserSession , "--format=json" )
@@ -151,7 +153,12 @@ func createFile (currentFile File){
 			fileData += "#"+ strings.TrimSpace(currentLine.Value)
 		}else{ 
 			// handling the non comment lines
-			fileData += strings.TrimSpace(currentLine.Label) +"="+ strings.TrimSpace(currentLine.Value)
+			// checking for the ref mode
+			if ReferenceMode{
+				fileData += strings.TrimSpace(currentLine.Label) +"='"+ strings.TrimSpace(currentLine.Reference)+"'"
+				}else{
+					fileData += strings.TrimSpace(currentLine.Label) +"="+ strings.TrimSpace(currentLine.Value)
+				}
 		}
 		// looking for place where line shouldnot break
 		if string(previousLineNumber) == strings.TrimSpace(currentLine.Sec.LineNumber){
@@ -161,19 +168,11 @@ func createFile (currentFile File){
 		fileData += "\n"
 	}
 
-	// // writing the content to the file
-	// file, err := os.Open(fileLocation)
-	// if err !=nil{
-	// 	fmt.Println("Error while opening the file", currentFile.Name)
-	// 	return 
-	// }
-
 	//  writing to the generated file
 	_, writingError := newFile.Write([]byte(fileData))
 	if writingError !=nil{
 		fmt.Println("Error while writing to the file", currentFile.Name, writingError)
 	}
-
 }
 
 
@@ -193,110 +192,3 @@ type Section struct{
 	Id 				string 	`json:"id"`
 	LineNumber  	string 	`json:"label"`
 }
-
-// get the individual file content
-// op items get fileId --vault toyvtochukuoekmwfd6rp65j3i --session 3FRT02DIG5kol2imZBlFyZ9RbZ8vzHZF_jMdN8trB8E --format=json
-// {
-// 	"id": "4zhjg2cuhp5psuzqypvtxfxbq4",
-// 	"title": ".env",
-// 	"version": 1,
-// 	"vault": {
-// 	  "id": "toyvtochukuoekmwfd6rp65j3i",
-// 	  "name": "validTest"
-// 	},
-// 	"category": "SECURE_NOTE",
-// 	"last_edited_by": "B5ZLBJDUZJD6ZNGBUNCDMESOTM",
-// 	"created_at": "2023-06-30T12:16:27Z",
-// 	"updated_at": "2023-06-30T12:16:27Z",
-// 	"sections": [
-// 	  {
-// 		"id": "Section_7m5uzc3d2vjlzh2ririqkokp24"
-// 	  },
-// 	  {
-// 		"id": "Section_bvopeayqfsiykauankvrdoyvxe",
-// 		"label": " 1"
-// 	  },
-// 	  {
-// 		"id": "Section_xn4b56au3uuk2y6ilwovgkdqhm",
-// 		"label": " 2"
-// 	  },
-// 	  {
-// 		"id": "Section_i2hryaih6rtdubkyvgy3acl3jq",
-// 		"label": " 3"
-// 	  }
-// 	],
-// 	"fields": [
-// 	  {
-// 		"id": "notesPlain",
-// 		"type": "STRING",
-// 		"purpose": "NOTES",
-// 		"label": "notesPlain",
-// 		"reference": "op://validTest/.env/notesPlain"
-// 	  },
-// 	  {
-// 		"id": "k7nh4z4gdgbyhkcgj5lalhbe4i",
-// 		"section": {
-// 		  "id": "Section_7m5uzc3d2vjlzh2ririqkokp24"
-// 		},
-// 		"type": "STRING",
-// 		"label": " location",
-// 		"value": "..\\api\\config\\.env ",
-// 		"reference": "op://validTest/.env/Section_7m5uzc3d2vjlzh2ririqkokp24/ location"
-// 	  },
-// 	  {
-// 		"id": "c5qxepwmqs7kq2g5nw6nblpof4",
-// 		"section": {
-// 		  "id": "Section_bvopeayqfsiykauankvrdoyvxe",
-// 		  "label": " 1"
-// 		},
-// 		"type": "STRING",
-// 		"label": " comment",
-// 		"value": "# connection string , ",
-// 		"reference": "op://validTest/.env/ 1/ comment"
-// 	  },
-// 	  {
-// 		"id": "4e2sf5w7vb7mskfv2nxooru2py",
-// 		"section": {
-// 		  "id": "Section_xn4b56au3uuk2y6ilwovgkdqhm",
-// 		  "label": " 2"
-// 		},
-// 		"type": "STRING",
-// 		"label": " DBCONNECTIONSTRING",
-// 		"value": "dburl  ",
-// 		"reference": "op://validTest/.env/ 2/ DBCONNECTIONSTRING"
-// 	  },
-// 	  {
-// 		"id": "u6ujrqymporzi7tcd36aac5tdi",
-// 		"section": {
-// 		  "id": "Section_xn4b56au3uuk2y6ilwovgkdqhm",
-// 		  "label": " 2"
-// 		},
-// 		"type": "STRING",
-// 		"label": " comment",
-// 		"value": "url is the test one",
-// 		"reference": "op://validTest/.env/ 2/ comment"
-// 	  },
-// 	  {
-// 		"id": "lnem4x54fouj6lyrcooxkruqxm",
-// 		"section": {
-// 		  "id": "Section_i2hryaih6rtdubkyvgy3acl3jq",
-// 		  "label": " 3"
-// 		},
-// 		"type": "STRING",
-// 		"label": " PORT",
-// 		"value": "3000  ",
-// 		"reference": "op://validTest/.env/ 3/ PORT"
-// 	  },
-// 	  {
-// 		"id": "aezhkkxo7ucoqsc3hthafp6mwi",
-// 		"section": {
-// 		  "id": "Section_i2hryaih6rtdubkyvgy3acl3jq",
-// 		  "label": " 3"
-// 		},
-// 		"type": "STRING",
-// 		"label": " comment",
-// 		"value": " this is dope though",
-// 		"reference": "op://validTest/.env/ 3/ comment"
-// 	  }
-// 	]
-//   }
