@@ -26,7 +26,6 @@ var RootCmd = &cobra.Command{
 	in the one password vault which can be easily updated, managed, and accessed 
 	Whenever and where ever you are.
 	`,
-	
 }
 
 
@@ -37,18 +36,13 @@ func Execute() {
 	}
 }
 
-
+var ReferenceMode bool = false
 func init() {
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
+	RootCmd.Flags().BoolVarP(&ReferenceMode,"refmode" ,"r", false, "pulls env file in reference mode.")
 }
-
-
-
 
 // used to signin the user if it is not signin
 func signinUser () User{
-
 	// getting the previous user session
 	previousUserSession, sessionError := getEnv("USER_SESSION")
 	// if there are no error while getting the previous user session then setting it
@@ -63,11 +57,6 @@ func signinUser () User{
 		LoggedIn = true
 		return LoggedInUser // if user is already logged in no need to login again
 	}
-	
-	// only in dev mode
-
-
-
 
 	// if user is logged in return that
 	if LoggedIn {
@@ -93,11 +82,6 @@ func signinUser () User{
 
 	return LoggedInUser
 }
-
-
-
-
-
 
 // sets the LoggedIn user details from the given session id 
 func setLoggedInUser () {

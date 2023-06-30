@@ -55,6 +55,8 @@ func pullFile (fileName string, pullAll bool){
 
 	json.Unmarshal([]byte(strings.Join(data, "")), &files)
 	
+	// contains the matched file
+	var currentFile File 
 	// checking if the asked files exists or not
 	if !pullAll {
 		var fileExists bool = false
@@ -64,6 +66,8 @@ func pullFile (fileName string, pullAll bool){
 			// adding to the existing file name
 			existingFileNames = append(existingFileNames, currentFileName)
 			if currentFileName == fileName{
+				// setting the current file to extract it's content
+				currentFile = files[i]
 				fileExists = true
 				break
 			}
@@ -75,6 +79,8 @@ func pullFile (fileName string, pullAll bool){
 			fmt.Printf("Is you file name listed?  \n%s",fileNamesStr)
 		}
 	}
+
+	createFile(currentFile)
 }
 
 func init() {
@@ -89,6 +95,9 @@ type File struct{
 
 var files[] File
 
+func createFile (currentFile File){
+
+}
 
 
 // references
