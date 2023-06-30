@@ -51,20 +51,20 @@ func signinUser () User{
 
 	// getting the previous user session
 	previousUserSession, sessionError := getEnv("USER_SESSION")
-	
 	// if there are no error while getting the previous user session then setting it
 	if sessionError == nil{
 		UserSession = previousUserSession
 	}
-	
-
 	// contains data from previous login
-	previousLogin, err := getEnv("LOGIN_TOKEN")
-	if err == nil {
+	previousLogin, loginTokenError := getEnv("LOGIN_TOKEN")
+	if loginTokenError == nil {
+		
 		json.Unmarshal([]byte(previousLogin), &LoggedInUser)
 		LoggedIn = true
 		return LoggedInUser // if user is already logged in no need to login again
 	}
+	
+	// only in dev mode
 
 
 
@@ -212,7 +212,6 @@ var SelectedProject Project
 func getEnv(envVariable string) (string,error){
 	// contains value from environment variable
 	var envVariableValue string
-
 	if runtime.GOOS == "windows"{
 	// windows registery key
 	key, err := registry.OpenKey(registry.LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`, registry.ALL_ACCESS)
@@ -223,7 +222,7 @@ func getEnv(envVariable string) (string,error){
 
 	// getting the env variable
 	value, _ , fetchingError := key.GetStringValue(envVariable)
-	if fetchingError == nil{
+	if fetchingError != nil{
 		return "" , fetchingError
 	}
 	// if the value exists but is empty
@@ -231,15 +230,36 @@ func getEnv(envVariable string) (string,error){
 		return "", errors.New("No value found")
 	}
 
-	envVariableValue = value
+	envVariableValue = value 
 	return envVariableValue , nil  
 }
 
-	// for linux and unix systems
+// for linux and unix systems
 	envVariableValue = os.Getenv(envVariable)
 
 	if envVariableValue == ""{
 		return "", errors.New("No value found")
 	}
+ 
 	return envVariableValue , nil  
+}
+
+// sets the provided value to the provided env variable
+func setEnv (envVariable string, envVariableValue string)error{
+	// if windows
+	if runtime.GOOS == "windows"{
+	// windows registery key
+	key, err := registry.OpenKey(registry.LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`, registry.ALL_ACCESS)
+	if err != nil {
+		return errors.New("Error while setting the registery key")
+	}
+	defer key.Close()
+	// setting the env variable
+	key.SetStringValue(envVariable, envVariableValue)
+	return nil
+}
+
+// for linux and unix systems
+	os.Setenv(envVariable, envVariableValue)
+	return nil
 }

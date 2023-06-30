@@ -40,6 +40,7 @@ func createProject(projectName string) {
 
 	status := <-statusChannel
 	
+	fmt.Println(UserSession)
 	if status.Error != nil{
 		fmt.Println("error")
 	}
