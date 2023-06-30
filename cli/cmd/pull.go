@@ -6,6 +6,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	cmdRunner "github.com/go-cmd/cmd"
@@ -90,7 +91,6 @@ func pullFile (fileName string, pullAll bool){
 
 	createFile(currentFile)
 	return
-
 }
 
 func init() {
@@ -107,29 +107,89 @@ var files[] File
 
 func createFile (currentFile File){
 
+	fetchDataCommand := cmdRunner.NewCmd("op","item", "get", currentFile.Id, "--vault", SelectedProject.Id, "--session", UserSession , "--format=json" )
+
+	response :=<- fetchDataCommand.Start()
+	data := strings.Join(response.Stdout, "")
+
+	var doc Lines
+	json.Unmarshal([]byte(data), &doc)
+	
+
+	var fileData string
+	var previousLineNumber int = 0
+	var fileLocation string
+	var newFile os.File 
+	for i:=0; i< len(doc.Fields); i++{
+		currentLine := doc.Fields[i]
+
+		// for creating the file in the stored location
+		if strings.TrimSpace(currentLine.Label) == "location"{
+			// creating the file in the stored location
+			fileLocation = currentLine.Value
+			file, err :=os.Create(fileLocation)
+			if err != nil {
+				fmt.Println("Error creating file:", currentFile.Name)
+				return
+			}
+			defer file.Close()
+			newFile = *file
+			fmt.Printf("File %s created successfully.", currentFile.Name)
+		}
+
+		// removing the items without the line number
+		if currentLine.Sec.LineNumber == ""{
+			continue
+		}
+
+		// valid lines reach here 
+		// handeling the comments
+		if strings.TrimSpace(currentLine.Label) == "comment"{
+			fileData += "#"+ strings.TrimSpace(currentLine.Value)
+		}else{ 
+			// handling the non comment lines
+			fileData += strings.TrimSpace(currentLine.Label) +"="+ strings.TrimSpace(currentLine.Value)
+		}
+		// looking for place where line shouldnot break
+		if string(previousLineNumber) == strings.TrimSpace(currentLine.Sec.LineNumber){
+			continue 
+		}
+		// breaking the line
+		fileData += "\n"
+	}
+
+	// // writing the content to the file
+	// file, err := os.Open(fileLocation)
+	// if err !=nil{
+	// 	fmt.Println("Error while opening the file", currentFile.Name)
+	// 	return 
+	// }
+
+	//  writing to the generated file
+	_, writingError := newFile.Write([]byte(fileData))
+	if writingError !=nil{
+		fmt.Println("Error while writing to the file", currentFile.Name, writingError)
+	}
+	
 }
 
 
-// references
+type Lines struct {
+	Fields []Line `json:"fields"`
+}
+type Line struct {
+	Id 			string 		`json:"id"`
+	Sec 		Section 	`json:"section"`  
+	Type 		string 		`json:"type"`
+	Label 		string 		`json:"label"`
+	Value 		string 		`json:"value"`
+	Reference 	string 		`json:"reference"`
+}
 
-// to get the files in a project
-	// op items list --vault vaultId i.e projectId --session sessionid --format=json
-// response
-// [
-//   {
-//     "id": "4zhjg2cuhp5psuzqypvtxfxbq4",
-//     "title": ".env",
-//     "version": 1,
-//     "vault": {
-//       "id": "toyvtochukuoekmwfd6rp65j3i",
-//       "name": "validTest"
-//     },
-//     "category": "SECURE_NOTE",
-//     "last_edited_by": "B5ZLBJDUZJD6ZNGBUNCDMESOTM",
-//     "created_at": "2023-06-30T12:16:27Z",
-//     "updated_at": "2023-06-30T12:16:27Z"
-//   }
-// ]
+type Section struct{
+	Id 				string 	`json:"id"`
+	LineNumber  	string 	`json:"label"`
+}
 
 // get the individual file content
 // op items get fileId --vault toyvtochukuoekmwfd6rp65j3i --session 3FRT02DIG5kol2imZBlFyZ9RbZ8vzHZF_jMdN8trB8E --format=json

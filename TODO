@@ -3,7 +3,10 @@ api:
 
 cli: 
   ☐ Fix the loading animation to run till the task exists
-  ☐ add the selected project to the terminal session
+  ✔ add the selected project to the terminal session @done(23-07-01 00:51)
   ✔ adding the logined user to the terminal session @done(23-06-30 16:34)
   ✔ refactoring the addind and getting env variable process @started(23-06-30 16:34) @done(23-06-30 17:27) @lasted(53m37s)
-  ☐ implement helpful logs and msg 
+  ✔ implement helpful logs and msg @done(23-06-30 18:45)
+  ✔ create the pull command @done(23-07-01 00:51)
+  ☐ create logout command
+  ☐ fix the project not selected error msg
