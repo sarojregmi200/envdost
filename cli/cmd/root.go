@@ -63,10 +63,12 @@ func signinUser () User{
 	sessionToken, _, err:= key.GetStringValue("USER_SESSION")
 	if err != nil {
 		fmt.Println("Failed to set environment variable:", err)
+	}else{
+		// setting the env variable to the previous login 
+		previousLogin = loginToken
+		UserSession = sessionToken
+
 	}
-	// setting the env variable to the previous login 
-	previousLogin = loginToken
-	UserSession = sessionToken
 	}else{
 		previousLogin = os.Getenv("LOGIN_TOKEN")
 		UserSession = os.Getenv("USER_SESSION")

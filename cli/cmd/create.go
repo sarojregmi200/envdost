@@ -36,8 +36,14 @@ func createProject(projectName string) {
 	} 
 	// creating one password vault
 	cmd:= cmdRunner.NewCmd("op", "vault", "create", projectName, "--session", UserSession)
-	cmd.Start()	
-	fmt.Println(UserSession)
+	statusChannel := cmd.Start()
+
+	status := <-statusChannel
+	
+	if status.Error != nil{
+		fmt.Println("error")
+	}
+	
 	// LoadingAnimation("Creating " + projectName + " project :", cmd.Process.Pid)
 	 	 
 }
