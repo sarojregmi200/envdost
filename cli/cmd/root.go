@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"syscall"
 	"time"
 
 	"strings"
@@ -126,30 +125,28 @@ var LoggedIn 	 bool = false // status of userlogin
 // a boolean that controls the animation loop
 var Animate 	 bool = false
 
-func LoadingAnimation (txt string, processChannel string) {
+func LoadingAnimation (txt string) {
 	
-	// handeling the process
 	// turning the animation on if the process exists
 	Animate = true
 	sequence  := [8] string {"⣾", "⣽", "⣻", "⢿" ,"⡿", "⣟", "⣯", "⣷"}  
 	var counter int = 0 // moves till the array index
 	for {
-		// for looking the process completion
-		err := process.Signal(syscall.Signal(0)) 
-		// sending 0 as a signal will not disturb the process if it exists if it doesnot then we can look the error msg
-		
-		if Animate == false || err != nil  {
-			Animate =  false
-			break
-		}
-
 		fmt.Print( txt + " " + sequence[counter] + "\r")
 		counter++
 		if counter >= 7{
 			counter = 0
 		}
-		time.Sleep(500 * time.Millisecond) // pauses the loop for 500 ms
+		 
+		
+		if Animate == false {
+			Animate =  false
+			break
+		}
+		
 		// to create a smooth animation
+		time.Sleep(500 * time.Millisecond) // pauses the loop for 500 ms
+		
 	}
 } 
 

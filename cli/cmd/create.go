@@ -32,18 +32,25 @@ var createCmd = &cobra.Command{
 // creates a new project in server with the name
 func createProject(projectName string) {
 
+	// loading animation before the process starts
+	Animate = true // running the animation
+	go	LoadingAnimation("Creating " + projectName + " project :")
+
 	// creating one password vault
 	cmd:= cmdRunner.NewCmd("op", "vault", "create", projectName, "--session", UserSession)
 	statusChannel := cmd.Start()
-
-	fmt.Printf("\nProject %s created successfully.\n", projectName)
-	// LoadingAnimation("Creating " + projectName + " project :", )
-
+	
 	// for handeling error
 	status := <-statusChannel
-	if status.Error != nil{	
+	if status.Error != nil{
 		fmt.Println("Error while creating the project ", projectName)
 	}
+
+	if status.Complete{
+		Animate = false
+	}
+
+	fmt.Printf("\nProject %s created successfully.\n", projectName)
 }
 
 func init() {
