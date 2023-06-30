@@ -234,12 +234,12 @@ func SetupLogin(){
 }
 
 // looks for selected project and updates the selected project if not found panics
-func SetSelectedProject(){
+func SetSelectedProject() error{
 	data, err := getEnv("SELECTED_PROJECT")
 	if err != nil{
-		log.Panic("Project not selected")
+	return errors.New("Please select the project first!!")
 	}
-
 	// parse the string data to struct
  	json.Unmarshal([]byte(data), &SelectedProject)
+	return nil
 }

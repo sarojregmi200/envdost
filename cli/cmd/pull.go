@@ -31,8 +31,11 @@ var pullCmd = &cobra.Command{
 		SetupLogin()
 		
 		// setting the selected project
-		SetSelectedProject()
-
+		err := SetSelectedProject()
+		if err!=nil{
+			fmt.Println(err)
+			return 
+		}
 		// if no args it will be true
 		var pullAll bool = false
 
@@ -170,7 +173,7 @@ func createFile (currentFile File){
 	if writingError !=nil{
 		fmt.Println("Error while writing to the file", currentFile.Name, writingError)
 	}
-	
+
 }
 
 

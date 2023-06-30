@@ -27,7 +27,11 @@ var pushCmd = &cobra.Command{
 		SetupLogin()
 		
 		// setting the selected project
-		SetSelectedProject()
+		err := SetSelectedProject()
+		if err!=nil{
+			fmt.Println(err)
+			return 
+		}
 
 		for i:=0 ; i< len(args); i++{
 			var filePath string = args[i]
