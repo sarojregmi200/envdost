@@ -113,34 +113,14 @@ func setLoggedInUser () {
 	if parsingErr != nil{
 		fmt.Println(parsingErr)
 	}
-
+	LoggedIn = true
 
 	// setting the loggedin user in the env
-	if runtime.GOOS == "windows"{
-	// 	key, err := registry.OpenKey(registry.LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`, registry.ALL_ACCESS)
-	// if err != nil {
-	// 	fmt.Println("Failed to open registry key:", err)
-	// }
-	// defer key.Close()
-
-	// // getting the env variable
-	// tokenError := key.SetStringValue("LOGIN_TOKEN", string(tokenCommand[:]))
-	// sessionError := key.SetStringValue("USER_SESSION", UserSession)
-
-	// if tokenError != nil || sessionError != nil {
-	// 	fmt.Println("Failed to set environment variable:", tokenError, sessionError)
-	// }
-	}else{
-
-	// for unix
-	tokenError := os.Setenv("LOGIN_TOKEN", string(tokenCommand[:]))
-	sessionError := os.Setenv("USER_SESSION", UserSession)
+	tokenError := setEnv("LOGIN_TOKEN", string(tokenCommand[:]))
+	sessionError := setEnv("USER_SESSION", UserSession)
 	if tokenError != nil || sessionError != nil{
-		fmt.Println("Session storage for terminal is turned off", tokenError)
+		fmt.Println("Session storage for terminal is turned off")
 	}
-	}
-
-	LoggedIn = true
 }
 
 // user types and definitions
@@ -245,7 +225,7 @@ func getEnv(envVariable string) (string,error){
 }
 
 // sets the provided value to the provided env variable
-func setEnv (envVariable string, envVariableValue string)error{
+func setEnv(envVariable string, envVariableValue string) error {
 	// if windows
 	if runtime.GOOS == "windows"{
 	// windows registery key
