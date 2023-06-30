@@ -36,9 +36,10 @@ func setProject (projectName string) {
 		fmt.Println( "Cannot find the project with the name "+ projectName)
 	}
 
+	// setting the selected project to env
+	setEnv("SELECTED_PROJECT", string(data[:]))
+
 	json.Unmarshal(data, &SelectedProject)
-
-
 }
 
 

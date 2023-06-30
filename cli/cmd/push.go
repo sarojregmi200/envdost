@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -22,6 +24,10 @@ var pushCmd = &cobra.Command{
 	
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		// sets the requirements before calling the push 
+		setup()
+
 		for i:=0 ; i< len(args); i++{
 			var filePath string = args[i]
 
@@ -68,10 +74,8 @@ func processFile (filePath string) []string{
 		// adding each line together for a item string
 		itemString =append(itemString, lineParser(i, line)...)
 	}
-
 	return itemString
 }
-
 
 // parses individual line and returns a string which 
 // represents each field of a item in op vault
@@ -79,10 +83,6 @@ func lineParser (lineNumber int , line string) []string {
 	
 	var parsedLine []string 
 	if strings.TrimSpace(line) == ""{return parsedLine}
-	// trim the spaces
-	// split by equals sign ( = ) anything not splited is comment 
-	// anything before equals is the key, and anything after equals is value
-	// split by # anything before the # is pure value, anything after is comment
 
 	keyValueFilter := strings.Split(strings.TrimSpace(line), "=") 
 	if len(keyValueFilter) < 2{
@@ -115,11 +115,6 @@ func lineParser (lineNumber int , line string) []string {
 // calls the op and sets the vault 
 // with the given file details
 func uploadFile(data []string, filePath string, fileName string){
-	//  op item create --title xyz --vault 6kxn74rc6njx7276ny4vqpcdr4 --session y5cX6xCKtOJ57p7ZQLytDFLIRbLWoaCGJ95ejGfP_Mw --category 'Secure Note' 'field1=value1' 'field2=value2'
-	
-	if !LoggedIn {
-		signinUser()
-	}
 	// file location in disk
 	diskLoc := fmt.Sprintf(` location[text]=%s `, filePath)
 
@@ -137,13 +132,21 @@ func uploadFile(data []string, filePath string, fileName string){
 
 
 	fmt.Println(data)
- 
 }
 
-func init() {
-	// for testing purposes initializing a selected project
-	SelectedProject.Id = "6kxn74rc6njx7276ny4vqpcdr4"
-	SelectedProject.Name = "abc"
+// checks and setsup the selected project if not panics
+func setup (){
+	if !LoggedIn {
+		signinUser()
+	}
+	data, err := getEnv("SELECTED_PROJECT")
+	if err != nil{
+		log.Panic("Project not selected")
+	}
 
+	// parse the string data to struct
+ 	json.Unmarshal([]byte(data), &SelectedProject)
+}
+func init() {
 	RootCmd.AddCommand(pushCmd)
 }
