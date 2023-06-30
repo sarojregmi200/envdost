@@ -44,20 +44,25 @@ func setProject (projectName string) {
 		fmt.Println( "Cannot find the project with the name ", projectName)
 		return 
 	}
-	if status.Complete{
-		Animate = false
-	}
-
-	// setting the selected project to env
-	envError:= setEnv("SELECTED_PROJECT", data)
-	
-	if envError != nil{
-		fmt.Println("Cannot set project", projectName)
+	if(status.Exit == 1){
+		fmt.Println("No project named", projectName + " found ")
 		return 
 	}
-	fmt.Printf("\nProject %s is selected successfully\n", projectName);
+	if status.Complete{
+		Animate = false
+		// setting the selected project to env
+		envError:= setEnv("SELECTED_PROJECT", data)
+		fmt.Println(status.Exit)
+		if envError != nil{
+			fmt.Println("Cannot set project", projectName)
+			return 
+		}
+		fmt.Printf("\nProject %s is selected successfully\n", projectName);
 
-	json.Unmarshal([]byte(data), &SelectedProject)
+		json.Unmarshal([]byte(data), &SelectedProject)
+	}
+
+	
 }
 
 

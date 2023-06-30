@@ -223,8 +223,9 @@ func SetupLogin(){
 func SetSelectedProject() error{
 	data, err := getEnv("SELECTED_PROJECT")
 	if err != nil{
-	return errors.New("Please select the project first!!")
+	return errors.New("Please set a project first!!")
 	}
+	
 	// parse the string data to struct
  	json.Unmarshal([]byte(data), &SelectedProject)
 	return nil
