@@ -11,3 +11,6 @@ cli:
   ☐ create logout command
   ✔ fix the project not selected error msg @started(23-07-01 00:55) @done(23-07-01 01:02) @lasted(7m54s)
   ☐ fix the line break problem
+  ☐ fix the set command error @started(23-07-01 01:11)
+  ☐ search for existing projects if projects not found
+  ☐ breaking the responses into levels such as searching.... found.... not found...

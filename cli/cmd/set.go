@@ -33,11 +33,17 @@ func setProject (projectName string) {
 	
 	data, errSearching := exec.Command("op", "vault", "get", projectName, "--session", UserSession, "--format=json").Output()
 	if errSearching != nil{ 
-		fmt.Println( "Cannot find the project with the name "+ projectName)
+		fmt.Println( "Cannot find the project with the name ", projectName)
+		return 
 	}
 
 	// setting the selected project to env
-	setEnv("SELECTED_PROJECT", string(data[:]))
+	envError:= setEnv("SELECTED_PROJECT", string(data[:]))
+	
+	if envError != nil{
+		fmt.Println("Cannot set project", projectName)
+		return 
+	}
 	fmt.Printf("\nProject %s is selected successfully\n", projectName);
 
 	json.Unmarshal(data, &SelectedProject)
