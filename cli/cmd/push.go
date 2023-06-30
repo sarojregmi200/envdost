@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
+	cmdRunner "github.com/go-cmd/cmd"
 	"github.com/spf13/cobra"
 )
 
@@ -45,9 +45,9 @@ var pushCmd = &cobra.Command{
 // processes each file and returns a string that
 // in a way it can be stored in the op vault as a item
 // item string with lines as feilds
-func processFile (filePath string) string{
+func processFile (filePath string) []string{
 	
-	var itemString string
+	var itemString []string 
 	
 	// opening the file
 	file, err := os.Open(filePath)
@@ -66,7 +66,7 @@ func processFile (filePath string) string{
 		i = i+1
 		line := reader.Text()
 		// adding each line together for a item string
-		itemString += lineParser(i, line)
+		itemString =append(itemString, lineParser(i, line)...)
 	}
 
 	return itemString
@@ -75,10 +75,10 @@ func processFile (filePath string) string{
 
 // parses individual line and returns a string which 
 // represents each field of a item in op vault
-func lineParser (lineNumber int , line string) string {
-	if strings.TrimSpace(line) == ""{return "" }
- 
-	var parsedLine string
+func lineParser (lineNumber int , line string) []string {
+	
+	var parsedLine []string 
+	if strings.TrimSpace(line) == ""{return parsedLine}
 	// trim the spaces
 	// split by equals sign ( = ) anything not splited is comment 
 	// anything before equals is the key, and anything after equals is value
@@ -87,7 +87,7 @@ func lineParser (lineNumber int , line string) string {
 	keyValueFilter := strings.Split(strings.TrimSpace(line), "=") 
 	if len(keyValueFilter) < 2{
 		// it is a comment
-		parsedLine = fmt.Sprintf(" '%d. comment[text]=%s' ",lineNumber, line)
+		parsedLine = append(parsedLine , fmt.Sprintf(" %d. comment[text]=%s , ",lineNumber, line))
 		return parsedLine
 	}
 
@@ -100,36 +100,44 @@ func lineParser (lineNumber int , line string) string {
 	
 	valueCommentFilter := strings.Split(rawValue, "#")
 	if len(valueCommentFilter) < 2 {
-		parsedLine = fmt.Sprintf(" '%d. %s[text]=%s' ", lineNumber, key, rawValue )
+		parsedLine = append(parsedLine, fmt.Sprintf(" %d. %s[text]=%s ", lineNumber, key, rawValue ))
 		return parsedLine
 	}
 	value := valueCommentFilter[0]
 	
 	comment := strings.Join(valueCommentFilter[1:], "")
 
-	parsedLine =fmt.Sprintf(" '%d. %s[text]=%s' '%d. comment[text]=#%s' ", lineNumber, key, value, lineNumber, comment)
+	parsedLine =append(parsedLine, fmt.Sprintf(" %d. %s[text]=%s  ", lineNumber, key, value), fmt.Sprintf(" %d. comment[text]=%s",  lineNumber, comment) )
 
 	return parsedLine
 }
 
 // calls the op and sets the vault 
 // with the given file details
-func uploadFile(data string, filePath string, fileName string){
+func uploadFile(data []string, filePath string, fileName string){
 	//  op item create --title xyz --vault 6kxn74rc6njx7276ny4vqpcdr4 --session y5cX6xCKtOJ57p7ZQLytDFLIRbLWoaCGJ95ejGfP_Mw --category 'Secure Note' 'field1=value1' 'field2=value2'
 	
 	if !LoggedIn {
 		signinUser()
 	}
 	// file location in disk
-	diskLoc := fmt.Sprintf(" 'location[text]=%s' ", filePath)
+	diskLoc := fmt.Sprintf(` location[text]=%s `, filePath)
 
-	cmd := exec.Command("op","item", "create", "--title", fileName, "--vault", SelectedProject.Id, "--session", UserSession, "--category", "'Secure Note'", data,  diskLoc);
 
-	err := cmd.Run()
-	if err !=nil{
-		fmt.Println("op","item", "create", "--title", fileName, "--vault", SelectedProject.Id, "--session", UserSession, "--category", "'Secure Note'", data,  diskLoc)
-		fmt.Println(err)
-	}
+	var args [] string
+	args = append(args, "item", "create", "--title", fileName, "--vault", SelectedProject.Id, "--session", UserSession, "--category", "Secure Note" , diskLoc)
+
+	args = append(args, data...)
+
+	addItemCmd := cmdRunner.NewCmd( "op",args...  );
+ 
+	
+ 	status := <- addItemCmd.Start()
+	fmt.Println(status)
+
+
+	fmt.Println(data)
+ 
 }
 
 func init() {
