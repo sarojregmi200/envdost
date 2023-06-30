@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -48,39 +49,25 @@ func init() {
 // used to signin the user if it is not signin
 func signinUser () User{
 
+	// getting the previous user session
+	previousUserSession, sessionError := getEnv("USER_SESSION")
+	
+	// if there are no error while getting the previous user session then setting it
+	if sessionError == nil{
+		UserSession = previousUserSession
+	}
+	
+
 	// contains data from previous login
-	var previousLogin string
-	// checking the users os first
-	if runtime.GOOS == "windows"{
-		key, err := registry.OpenKey(registry.LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`, registry.ALL_ACCESS)
-	if err != nil {
-		fmt.Println("Failed to open registry key:", err)
-	}
-	defer key.Close()
-
-	// getting the env variable
-	loginToken, _,err := key.GetStringValue("LOGIN_TOKEN")
-	sessionToken, _, err:= key.GetStringValue("USER_SESSION")
-	if err != nil {
-		fmt.Println("Failed to set environment variable:", err)
-	}else{
-		// setting the env variable to the previous login 
-		previousLogin = loginToken
-		UserSession = sessionToken
-
-	}
-	}else{
-		previousLogin = os.Getenv("LOGIN_TOKEN")
-		UserSession = os.Getenv("USER_SESSION")
-	}
-
-	if previousLogin != ""{ 
+	previousLogin, err := getEnv("LOGIN_TOKEN")
+	if err == nil {
 		json.Unmarshal([]byte(previousLogin), &LoggedInUser)
 		LoggedIn = true
 		return LoggedInUser // if user is already logged in no need to login again
-	}  
+	}
 
-	
+
+
 
 	// if user is logged in return that
 	if LoggedIn {
@@ -108,6 +95,10 @@ func signinUser () User{
 }
 
 
+
+
+
+
 // sets the LoggedIn user details from the given session id 
 func setLoggedInUser () {
 	// gets the user info from the session token
@@ -126,19 +117,19 @@ func setLoggedInUser () {
 
 	// setting the loggedin user in the env
 	if runtime.GOOS == "windows"{
-		key, err := registry.OpenKey(registry.LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`, registry.ALL_ACCESS)
-	if err != nil {
-		fmt.Println("Failed to open registry key:", err)
-	}
-	defer key.Close()
+	// 	key, err := registry.OpenKey(registry.LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`, registry.ALL_ACCESS)
+	// if err != nil {
+	// 	fmt.Println("Failed to open registry key:", err)
+	// }
+	// defer key.Close()
 
-	// getting the env variable
-	tokenError := key.SetStringValue("LOGIN_TOKEN", string(tokenCommand[:]))
-	sessionError := key.SetStringValue("USER_SESSION", UserSession)
+	// // getting the env variable
+	// tokenError := key.SetStringValue("LOGIN_TOKEN", string(tokenCommand[:]))
+	// sessionError := key.SetStringValue("USER_SESSION", UserSession)
 
-	if tokenError != nil || sessionError != nil {
-		fmt.Println("Failed to set environment variable:", tokenError, sessionError)
-	}
+	// if tokenError != nil || sessionError != nil {
+	// 	fmt.Println("Failed to set environment variable:", tokenError, sessionError)
+	// }
 	}else{
 
 	// for unix
@@ -214,3 +205,41 @@ type Project struct {
 }	
 
 var SelectedProject Project
+
+
+
+// fetches the value from the environment variable and returns the value and error
+func getEnv(envVariable string) (string,error){
+	// contains value from environment variable
+	var envVariableValue string
+
+	if runtime.GOOS == "windows"{
+	// windows registery key
+	key, err := registry.OpenKey(registry.LOCAL_MACHINE, `SYSTEM\CurrentControlSet\Control\Session Manager\Environment`, registry.ALL_ACCESS)
+	if err != nil {
+		return "" , err
+	}
+	defer key.Close()
+
+	// getting the env variable
+	value, _ , fetchingError := key.GetStringValue(envVariable)
+	if fetchingError == nil{
+		return "" , fetchingError
+	}
+	// if the value exists but is empty
+	if value == ""{
+		return "", errors.New("No value found")
+	}
+
+	envVariableValue = value
+	return envVariableValue , nil  
+}
+
+	// for linux and unix systems
+	envVariableValue = os.Getenv(envVariable)
+
+	if envVariableValue == ""{
+		return "", errors.New("No value found")
+	}
+	return envVariableValue , nil  
+}
