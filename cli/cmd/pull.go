@@ -80,7 +80,17 @@ func pullFile (fileName string, pullAll bool){
 		}
 	}
 
+	// accounting for the pull all mode
+	if pullAll{
+		for i:=0; i< len(files); i++{
+			createFile(files[i])
+		}
+		return
+	}
+
 	createFile(currentFile)
+	return
+
 }
 
 func init() {
