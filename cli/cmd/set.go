@@ -3,8 +3,9 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"os/exec"
+	"strings"
 
+	cmdRunner "github.com/go-cmd/cmd"
 	"github.com/spf13/cobra"
 )
 
@@ -30,15 +31,25 @@ func setProject (projectName string) {
 	
 	// logins the user if not logged in
 	SetupLogin()
+
+	// starting the animation
+	Animate = true
+	go LoadingAnimation("Selecting "+ projectName +" :")
 	
-	data, errSearching := exec.Command("op", "vault", "get", projectName, "--session", UserSession, "--format=json").Output()
-	if errSearching != nil{ 
+	setProjectCmd := cmdRunner.NewCmd("op", "vault", "get", projectName, "--session", UserSession, "--format=json")
+	status :=<- setProjectCmd.Start()
+	data := strings.Join(status.Stdout, "")
+
+	if status.Error != nil{ 
 		fmt.Println( "Cannot find the project with the name ", projectName)
 		return 
 	}
+	if status.Complete{
+		Animate = false
+	}
 
 	// setting the selected project to env
-	envError:= setEnv("SELECTED_PROJECT", string(data[:]))
+	envError:= setEnv("SELECTED_PROJECT", data)
 	
 	if envError != nil{
 		fmt.Println("Cannot set project", projectName)
@@ -46,7 +57,7 @@ func setProject (projectName string) {
 	}
 	fmt.Printf("\nProject %s is selected successfully\n", projectName);
 
-	json.Unmarshal(data, &SelectedProject)
+	json.Unmarshal([]byte(data), &SelectedProject)
 }
 
 

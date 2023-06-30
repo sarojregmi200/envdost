@@ -137,16 +137,13 @@ func LoadingAnimation (txt string) {
 		if counter >= 7{
 			counter = 0
 		}
-		 
-		
+
 		if Animate == false {
 			Animate =  false
 			break
 		}
-		
 		// to create a smooth animation
-		time.Sleep(500 * time.Millisecond) // pauses the loop for 500 ms
-		
+		time.Sleep(100 * time.Millisecond) // pauses the loop for 500 ms
 	}
 } 
 
