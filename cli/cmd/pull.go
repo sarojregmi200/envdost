@@ -51,13 +51,30 @@ var pullCmd = &cobra.Command{
 
 // fetches the data and creates a env file or files
 func pullFile (fileName string, pullAll bool){
+
+	// animation
+	Animate = true
+	if pullAll {
+		go LoadingAnimation("Pulling all config files from project "+ SelectedProject.Name)
+	}else{
+		go LoadingAnimation("Pulling "+ fileName +" from project "+ SelectedProject.Name)
+	}
+
 	// getting all the files
 	getAllFilesCommand := cmdRunner.NewCmd("op",  "items" ,"list", "--vault", SelectedProject.Id, "--session", UserSession, "--format=json")
 
 	response :=<- getAllFilesCommand.Start()
 	data := response.Stdout
 
+	
 	json.Unmarshal([]byte(strings.Join(data, "")), &files) 
+	
+	if len(files) < 1 && pullAll{
+		Animate = false
+		fmt.Println("\nNo files found")
+		return  
+	}
+
 	// contains the matched file
 	var currentFile File 
 	// checking if the asked files exists or not

@@ -34,7 +34,7 @@ func setProject (projectName string) {
 
 	// starting the animation
 	Animate = true
-	go LoadingAnimation("Selecting "+ projectName +" :")
+	go LoadingAnimation("Selecting "+ projectName +" ")
 	
 	setProjectCmd := cmdRunner.NewCmd("op", "vault", "get", projectName, "--session", UserSession, "--format=json")
 	status :=<- setProjectCmd.Start()
@@ -52,7 +52,6 @@ func setProject (projectName string) {
 		Animate = false
 		// setting the selected project to env
 		envError:= setEnv("SELECTED_PROJECT", data)
-		fmt.Println(status.Exit)
 		if envError != nil{
 			fmt.Println("Cannot set project", projectName)
 			return 

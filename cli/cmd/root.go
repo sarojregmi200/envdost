@@ -132,16 +132,17 @@ func LoadingAnimation (txt string) {
 	sequence  := [8] string {"⣾", "⣽", "⣻", "⢿" ,"⡿", "⣟", "⣯", "⣷"}  
 	var counter int = 0 // moves till the array index
 	for {
+		if Animate == false {
+			Animate =  false
+			break
+		}
 		fmt.Print( txt + " " + sequence[counter] + "\r")
 		counter++
 		if counter >= 7{
 			counter = 0
 		}
 
-		if Animate == false {
-			Animate =  false
-			break
-		}
+		
 		// to create a smooth animation
 		time.Sleep(100 * time.Millisecond) // pauses the loop for 500 ms
 	}

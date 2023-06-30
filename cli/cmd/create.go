@@ -34,7 +34,7 @@ func createProject(projectName string) {
 
 	// loading animation before the process starts
 	Animate = true // running the animation
-	go	LoadingAnimation("Creating " + projectName + " project :")
+	go	LoadingAnimation("Creating " + projectName + " project ")
 
 	// creating one password vault
 	cmd:= cmdRunner.NewCmd("op", "vault", "create", projectName, "--session", UserSession)
