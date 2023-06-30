@@ -10,7 +10,7 @@ cli:
   ✔ creating the reference mode @started(23-07-01 01:26) @done(23-07-01 01:34) @lasted(8m48s)
   ✔ fix the project not selected error msg @started(23-07-01 00:55) @done(23-07-01 01:02) @lasted(7m54s)
   ✔ fix the set command error @started(23-07-01 01:11) @done(23-07-01 01:18) @lasted(7m8s)
-  ☐ fix the bug during the incorrect naming of the pull file pull command
+  ☐ fix the bug during the incorrect naming of the pull file pull command @started(23-07-01 01:56)
   ☐ Fix the loading animation to run till the task exists
   ☐ breaking the responses into levels such as searching.... found.... not found...
   ☐ create delete command

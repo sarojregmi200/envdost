@@ -57,8 +57,7 @@ func pullFile (fileName string, pullAll bool){
 	response :=<- getAllFilesCommand.Start()
 	data := response.Stdout
 
-	json.Unmarshal([]byte(strings.Join(data, "")), &files)
-	
+	json.Unmarshal([]byte(strings.Join(data, "")), &files) 
 	// contains the matched file
 	var currentFile File 
 	// checking if the asked files exists or not
@@ -81,12 +80,14 @@ func pullFile (fileName string, pullAll bool){
 			fileNamesStr := strings.Join(existingFileNames, ",")
 			fmt.Printf("\nThere is no file with the name %s\n", fileName)
 			fmt.Printf("Is you file name listed?  \n%s",fileNamesStr)
+			return 
 		}
 	}
 
 	// accounting for the pull all mode
 	if pullAll{
 		for i:=0; i< len(files); i++{
+
 			createFile(files[i])
 		}
 		return
