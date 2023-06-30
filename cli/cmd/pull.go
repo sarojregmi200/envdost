@@ -66,7 +66,6 @@ func pullFile (fileName string, pullAll bool){
 	response :=<- getAllFilesCommand.Start()
 	data := response.Stdout
 
-	
 	json.Unmarshal([]byte(strings.Join(data, "")), &files) 
 	
 	if len(files) < 1 && pullAll{
@@ -157,7 +156,7 @@ func createFile (currentFile File){
 			}
 			defer file.Close()
 			newFile = *file
-			fmt.Printf("File %s created successfully.", currentFile.Name)
+			fmt.Printf("\nFile %s created successfully.", currentFile.Name)
 		}
 
 		// removing the items without the line number
