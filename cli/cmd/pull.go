@@ -21,21 +21,32 @@ var pullCmd = &cobra.Command{
 	pullesh the provided file from the server.
 	
 	`,
+	
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("pull called")
+		// user login
+		SetupLogin()
+		
+		// setting the selected project
+		SetSelectedProject()
+
+		// if no args it will be true
+		var pullAll bool = false
+
+		for i:=0; i< len(args); i++{
+			pullFile(args[i], pullAll)
+		}
+		if len(args) < 1{
+			pullFile("", true)
+		}
 	},
+}
+
+
+// fetches the data and creates a env file or files
+func pullFile (fileName string, pullAll bool){
+	fmt.Println("Pulling file ", fileName, "pull all = ", pullAll)
 }
 
 func init() {
 	RootCmd.AddCommand(pullCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// pullCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// pullCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

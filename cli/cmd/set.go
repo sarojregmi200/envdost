@@ -27,10 +27,10 @@ var setCmd = &cobra.Command{
 }
 
 func setProject (projectName string) {
-	if !LoggedIn{
-		signinUser() // this will prompt the user to signin and store the details of the signined user
-	}
-
+	
+	// logins the user if not logged in
+	SetupLogin()
+	
 	data, errSearching := exec.Command("op", "vault", "get", projectName, "--session", UserSession, "--format=json").Output()
 	if errSearching != nil{ 
 		fmt.Println( "Cannot find the project with the name "+ projectName)

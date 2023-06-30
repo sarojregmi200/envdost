@@ -243,3 +243,22 @@ func setEnv(envVariable string, envVariableValue string) error {
 	os.Setenv(envVariable, envVariableValue)
 	return nil
 }
+
+
+// prompts the user to login if not logged in
+func SetupLogin(){
+	if LoggedIn == false{
+		signinUser() // will set the session id as well 
+	} 
+}
+
+// looks for selected project and updates the selected project if not found panics
+func SetSelectedProject(){
+	data, err := getEnv("SELECTED_PROJECT")
+	if err != nil{
+		log.Panic("Project not selected")
+	}
+
+	// parse the string data to struct
+ 	json.Unmarshal([]byte(data), &SelectedProject)
+}

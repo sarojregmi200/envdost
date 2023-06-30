@@ -2,9 +2,7 @@ package cmd
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -25,8 +23,11 @@ var pushCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// sets the requirements before calling the push 
-		setup()
+		// user login
+		SetupLogin()
+		
+		// setting the selected project
+		SetSelectedProject()
 
 		for i:=0 ; i< len(args); i++{
 			var filePath string = args[i]
@@ -130,19 +131,6 @@ func uploadFile(data []string, filePath string, fileName string){
 	fmt.Println(data)
 }
 
-// checks and setsup the selected project if not panics
-func setup (){
-	if !LoggedIn {
-		signinUser()
-	}
-	data, err := getEnv("SELECTED_PROJECT")
-	if err != nil{
-		log.Panic("Project not selected")
-	}
-
-	// parse the string data to struct
- 	json.Unmarshal([]byte(data), &SelectedProject)
-}
 func init() {
 	RootCmd.AddCommand(pushCmd)
 }

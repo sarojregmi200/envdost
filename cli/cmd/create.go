@@ -20,6 +20,7 @@ var createCmd = &cobra.Command{
 	`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogin() //  promts the user to login if not already logged in
 		for i := 0 ; i< len(args); i++{
 			projectName := args[i] 
 			createProject(projectName)
@@ -30,9 +31,7 @@ var createCmd = &cobra.Command{
 // creates a new op vault with the name of the project
 // creates a new project in server with the name
 func createProject(projectName string) {
-	if LoggedIn == false{
-		signinUser() // will set the session id as well 
-	} 
+
 	// creating one password vault
 	cmd:= cmdRunner.NewCmd("op", "vault", "create", projectName, "--session", UserSession)
 	statusChannel := cmd.Start()
@@ -46,7 +45,6 @@ func createProject(projectName string) {
 	
 	fmt.Printf("\nProject %s created successfully.\n", projectName)
 	// LoadingAnimation("Creating " + projectName + " project :", cmd.Process.Pid)
-	 	 
 }
 
 func init() {
