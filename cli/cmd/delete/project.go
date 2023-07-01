@@ -31,15 +31,20 @@ var projectCmd = &cobra.Command{
 		root.SetupLogin()
 
 		// setting up the selected project
-		root.SetSelectedProject()
-		
-		if len(args) > 0{
-			deleteProject(findProject(args[0]))
-		}
+		selectingError := root.SetSelectedProject()
 
+		if selectingError !=nil{
+		fmt.Println(selectingError)
+		return
+		}
 		// creating a project array and then passing to delete project
 		var projects [] root.Project
-		projects = append(projects, root.SelectedProject)
+		if len(args) > 0{
+			projects = findProject(args[0]) 
+		}else{
+			projects = append(projects, root.SelectedProject) 
+		}
+		
 		deleteProject(projects)
 	},
 }
