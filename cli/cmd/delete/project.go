@@ -55,8 +55,8 @@ func deleteProject (projects []root.Project){
 		if project.Name == "" || project.Id == ""{
 			continue
 		}
-		root.Animate = true
-		go root.LoadingAnimation("Deleting project"+ project.Name)
+		// root.Animate = true
+		// go root.LoadingAnimation("Deleting project"+ project.Name)
 		
 		deleteProCmd := cmdRunner.NewCmd("op", "vault", "delete", project.Id ,"--session", root.UserSession)
 		status :=<- deleteProCmd.Start()
@@ -66,7 +66,7 @@ func deleteProject (projects []root.Project){
 		}
 		
 		if status.Complete {
-			root.Animate = false
+			// root.Animate = false
 			fmt.Println("\nProject "+project.Name+" deleted successfully!!")
 			// removing the project from env 
 			envError := root.SetEnv("SELECTED_PROJECT", "")
@@ -81,8 +81,8 @@ func findProject(projectName string) []root.Project{
 	var allProjects []root.Project 
 	var projects [] root.Project
 	// animation
-	root.Animate = true
-	go root.LoadingAnimation("Searching project "+ projectName)
+	// root.Animate = true
+	// go root.LoadingAnimation("Searching project "+ projectName)
 	
 	// finding the project
 	findProjectCmd := cmdRunner.NewCmd("op", "vault", "list", "--session", root.UserSession, "--format=json")

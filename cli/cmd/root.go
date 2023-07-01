@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"sync"
 	"time"
 
 	"strings"
@@ -125,27 +126,28 @@ var LoggedIn 	 bool = false // status of userlogin
 // a boolean that controls the animation loop
 var Animate 	 bool = false
 
-func LoadingAnimation (txt string) {
-	
-	// turning the animation on if the process exists
-	Animate = true
+func LoadingAnimation (txt string, stopAnimation <- chan struct{}, wg *sync.WaitGroup) {
+	defer wg.Done() // closing the function
+
+	fmt.Println("") // to avoid writing in previous line of other content
 	sequence  := [8] string {"⣾", "⣽", "⣻", "⢿" ,"⡿", "⣟", "⣯", "⣷"}  
 	var counter int = 0 // moves till the array index
 	for {
-		if Animate == false {
-			Animate =  false
+		select{
+		case <-stopAnimation:
 			return
-		}
-		fmt.Print( txt + " " + sequence[counter] + "\r")
-		counter++
-		if counter >= 7{
-			counter = 0
+		default:
+			fmt.Print( txt + " " + sequence[counter] + "\r")
+			// fmt.Print( txt + " " + sequence[counter] +"\n" )
+			counter++
+			if counter >= 7{
+				counter = 0
+			}		
+			// to create a smooth animation
+			time.Sleep(100 * time.Millisecond) // pauses the loop for 500 ms
 		}
 
-		
-		// to create a smooth animation
-		time.Sleep(100 * time.Millisecond) // pauses the loop for 500 ms
-	}
+		} 
 } 
 
 // for the selected projects

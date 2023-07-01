@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 
 	cmdRunner "github.com/go-cmd/cmd"
 	"github.com/spf13/cobra"
@@ -39,25 +40,32 @@ var pullCmd = &cobra.Command{
 		// if no args it will be true
 		var pullAll bool = false
 
+		if len(args) < 1{
+			pullAll=true
+			pullFile("", pullAll)
+			return
+		}
 		for i:=0; i< len(args); i++{
 			pullFile(args[i], pullAll)
 		}
-		if len(args) < 1{
-			pullFile("", true)
-		}
+		
 	},
 }
 
-
+var wg sync.WaitGroup
 // fetches the data and creates a env file or files
 func pullFile (fileName string, pullAll bool){
 
-	// animation
-	Animate = true
+	// making a channel to stop animation 
+	stopAnimation := make(chan struct{})
+	
+
 	if pullAll {
-		go LoadingAnimation("Pulling all config files from project "+ SelectedProject.Name)
+		wg.Add(1)
+		go LoadingAnimation("looking for config files in project "+ SelectedProject.Name, stopAnimation, &wg)
 	}else{
-		go LoadingAnimation("Pulling "+ fileName +" from project "+ SelectedProject.Name)
+		wg.Add(1)
+		go LoadingAnimation("Pulling "+ fileName +" from project "+ SelectedProject.Name, stopAnimation, &wg)
 	}
 
 	// getting all the files
@@ -65,10 +73,19 @@ func pullFile (fileName string, pullAll bool){
 
 	response :=<- getAllFilesCommand.Start()
 	data := response.Stdout
+	if response.Error != nil{
+		fmt.Println("\nError while pulling files from "+ SelectedProject.Name)
+	}
 
-	json.Unmarshal([]byte(strings.Join(data, "")), &files) 
+	if response.Complete{
+		json.Unmarshal([]byte(strings.Join(data, "")), &files)
+		// stopping the animation 
+		close(stopAnimation)
+	}
+
+
 	
-	if len(files) < 1 && pullAll{
+	if len(files) < 1{
 		Animate = false
 		fmt.Println("\nNo files found")
 		return  
@@ -100,10 +117,10 @@ func pullFile (fileName string, pullAll bool){
 		}
 	}
 
+	wg.Wait()
 	// accounting for the pull all mode
 	if pullAll{
 		for i:=0; i< len(files); i++{
-
 			createFile(files[i])
 		}
 		return
@@ -128,16 +145,24 @@ var files[] File
 
 // fetches the file content and creates the file
 func createFile (currentFile File){
+	var newWg sync.WaitGroup
 
+	newWg.Add(1)
+	stopAnimation := make(chan struct{})
+	go LoadingAnimation("Fetching content of "+ currentFile.Name, stopAnimation ,&newWg) 
 	fetchDataCommand := cmdRunner.NewCmd("op","item", "get", currentFile.Id, "--vault", SelectedProject.Id, "--session", UserSession , "--format=json" )
 
 	response :=<- fetchDataCommand.Start()
 	data := strings.Join(response.Stdout, "")
-
+	
 	var doc Lines
 	json.Unmarshal([]byte(data), &doc)
 	
-
+	// checking the file content
+	if len(doc.Fields) < 1 || response.Error!=nil{
+		fmt.Println("\nFailed fetching "+currentFile.Name+"'s information. Empty or invalid data found")
+		close(stopAnimation)
+	}
 	var fileData string
 	var previousLineNumber int = 0
 	var fileLocation string
@@ -188,8 +213,12 @@ func createFile (currentFile File){
 	//  writing to the generated file
 	_, writingError := newFile.Write([]byte(fileData))
 	if writingError !=nil{
-		fmt.Println("Error while writing to the file", currentFile.Name, writingError)
+		fmt.Println("\nError while writing to the file", currentFile.Name, writingError)
+		return
 	}
+	close(stopAnimation) // stopping the animation
+	newWg.Wait()
+	fmt.Println("\nCompleted writing to file "+ currentFile.Name)
 }
 
 

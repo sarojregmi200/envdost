@@ -14,7 +14,8 @@ cli:
   ✔ Fix the loading animation to run till the task exists @started(23-07-01 02:07) @done(23-07-01 02:41) @lasted(34m59s)
   ✔ fix the pull command no files found error @done(23-07-01 03:59)
   ✔ breaking the responses into levels such as searching.... found.... not found... @done(23-07-01 03:59)
-  ☐ create delete command @started(23-07-01 04:02)
+  ✔ create delete command project @started(23-07-01 04:02) @done(23-07-01 10:09) @lasted(6h7m32s)
+  ☐ fix the pull all msg  
   ☐ fix the login with time and sesson based timeout
   ☐ create logout command
   ☐ Error running multiple create command animation error

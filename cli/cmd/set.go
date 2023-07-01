@@ -33,7 +33,7 @@ func SetProject (projectName string) {
 
 	// starting the animation
 	Animate = true
-	go LoadingAnimation("Selecting "+ projectName +" ")
+	// go LoadingAnimation("Selecting "+ projectName +" ")
 	
 	setProjectCmd := cmdRunner.NewCmd("op", "vault", "get", projectName, "--session", UserSession, "--format=json")
 	status :=<- setProjectCmd.Start()

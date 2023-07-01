@@ -139,8 +139,8 @@ func uploadFile(data []string, filePath string, fileName string){
 	args = append(args, data...)
 
 	// animation 
-	Animate = true
-	go LoadingAnimation("Uploading "+ fileName)
+	// Animate = true
+	// go LoadingAnimation("Uploading "+ fileName)
 
 	addItemCmd := cmdRunner.NewCmd( "op",args...  );
  
@@ -150,7 +150,7 @@ func uploadFile(data []string, filePath string, fileName string){
 	}
 
 	if status.Complete{
-		Animate = false
+		// Animate = false
 		fmt.Printf("\nFile %s successfully uploaded under project %s \n", fileName , SelectedProject.Name)
 	}
 }
