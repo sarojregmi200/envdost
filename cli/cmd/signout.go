@@ -14,13 +14,14 @@ import (
 // signoutCmd represents the signout command
 var signoutCmd = &cobra.Command{
 	Use:   "signout",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Used to signout.",
+	Long: `
+	signout will log you out of the current account, and reset the environment variable
+	
+	Example:
+	envdost signout
+	logs you out of the currently loggedin account
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		getPreviousLoginData()
 		var wg sync.WaitGroup
