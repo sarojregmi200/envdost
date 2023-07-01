@@ -12,11 +12,12 @@ cli:
   ✔ fix the set command error @started(23-07-01 01:11) @done(23-07-01 01:18) @lasted(7m8s)
   ✔ fix the bug during the incorrect naming of the pull file pull command @started(23-07-01 01:56) @done(23-07-01 02:04) @lasted(8m20s)
   ✔ Fix the loading animation to run till the task exists @started(23-07-01 02:07) @done(23-07-01 02:41) @lasted(34m59s)
-  ☐ fix the pull command no files found error
-  ☐ breaking the responses into levels such as searching.... found.... not found...
-  ☐ create delete command
+  ✔ fix the pull command no files found error @done(23-07-01 03:59)
+  ✔ breaking the responses into levels such as searching.... found.... not found... @done(23-07-01 03:59)
+  ☐ create delete command @started(23-07-01 04:02)
   ☐ fix the login with time and sesson based timeout
   ☐ create logout command
+  ☐ Error running multiple create command animation error
   ☐ fix the line break problem
   ☐ search for existing projects if projects not found
   

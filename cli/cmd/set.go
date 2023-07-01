@@ -51,7 +51,7 @@ func setProject (projectName string) {
 	if status.Complete{
 		Animate = false
 		// setting the selected project to env
-		envError:= setEnv("SELECTED_PROJECT", data)
+		envError:=SetEnv("SELECTED_PROJECT", data)
 		if envError != nil{
 			fmt.Println("Cannot set project", projectName)
 			return 

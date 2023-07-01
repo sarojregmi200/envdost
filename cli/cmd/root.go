@@ -60,7 +60,7 @@ func signinUser () User{
 	if LoggedIn {
 		return LoggedInUser
 	}
-
+	
 	// one password singin command
 	signinCmd := exec.Command("op", "signin", "-f", "--raw")
 	signinCmd.Stdin = os.Stdin
@@ -98,8 +98,8 @@ func setLoggedInUser () {
 	LoggedIn = true
 
 	// setting the loggedin user in the env
-	tokenError := setEnv("LOGIN_TOKEN", string(tokenCommand[:]))
-	sessionError := setEnv("USER_SESSION", UserSession)
+	tokenError :=SetEnv("LOGIN_TOKEN", string(tokenCommand[:]))
+	sessionError :=SetEnv("USER_SESSION", UserSession)
 	if tokenError != nil || sessionError != nil{
 		fmt.Println("Session storage for terminal is turned off")
 	}
@@ -193,7 +193,7 @@ func getEnv(envVariable string) (string,error){
 }
 
 // sets the provided value to the provided env variable
-func setEnv(envVariable string, envVariableValue string) error {
+func SetEnv(envVariable string, envVariableValue string) error {
 	// if windows
 	if runtime.GOOS == "windows"{
 	// windows registery key

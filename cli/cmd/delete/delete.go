@@ -19,7 +19,7 @@ var deleteCmd = &cobra.Command{
 	
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("push called")
+		fmt.Println("It is used to delete projects or env files, use -h to learn about it along with  examples")
 	},
 }
 
