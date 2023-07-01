@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"sync"
 
 	cmdRunner "github.com/go-cmd/cmd"
 	"github.com/spf13/cobra"
@@ -32,8 +33,10 @@ func SetProject (projectName string) {
 	SetupLogin()
 
 	// starting the animation
-	Animate = true
-	// go LoadingAnimation("Selecting "+ projectName +" ")
+	var wg sync.WaitGroup
+	stopAnimation := make(chan struct{})
+	wg.Add(1)
+	go LoadingAnimation("Selecting "+ projectName +" ", stopAnimation, &wg)
 	
 	setProjectCmd := cmdRunner.NewCmd("op", "vault", "get", projectName, "--session", UserSession, "--format=json")
 	status :=<- setProjectCmd.Start()
@@ -41,14 +44,16 @@ func SetProject (projectName string) {
 
 	if status.Error != nil{ 
 		fmt.Println( "Cannot find the project with the name ", projectName)
+		close(stopAnimation)
 		return 
 	}
 	if(status.Exit == 1){
 		fmt.Println("More than one", projectName + " found.\nSelecting project with multiple same name is not available in this version.\nIt will be available in next version, till then try making project name different and keep an eye at github.com/sarojregmi200/envdost\nfor a new version. :)")
+		close(stopAnimation)
 		return 
 	}
 	if status.Complete{
-		Animate = false
+		close(stopAnimation)
 		// setting the selected project to env
 		envError:=SetEnv("SELECTED_PROJECT", data)
 		if envError != nil{
@@ -59,6 +64,7 @@ func SetProject (projectName string) {
 
 		json.Unmarshal([]byte(data), &SelectedProject)
 	}	
+	wg.Wait()
 }
 
 
