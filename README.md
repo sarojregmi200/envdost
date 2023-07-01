@@ -23,13 +23,13 @@ New to 1password ? [👉 click me](https://support.1password.com/explore/get-sta
 
 ### Usage :
 These are the commands available as of the latest version of envdost [v1.0.0](https://github.com/sarojregmi200/envdost/releases/tag/v1.0.0):
-- [Signin](https://github.com/sarojregmi200/envdost/edit/main/README.md#signin)
-- [Signout](https://github.com/sarojregmi200/envdost/edit/main/README.md#signout)
-- [Create](https://github.com/sarojregmi200/envdost/edit/main/README.md#create)
-- [Set](https://github.com/sarojregmi200/envdost/edit/main/README.md#set)
-- [Push](https://github.com/sarojregmi200/envdost/edit/main/README.md#push)
-- [Pull](https://github.com/sarojregmi200/envdost/edit/main/README.md#pull)
-- [Delete](https://github.com/sarojregmi200/envdost/edit/main/README.md#delete)
+- [Signin](https://github.com/sarojregmi200/envdost/blob/main/README.md#signin)
+- [Signout](https://github.com/sarojregmi200/envdost/blob/main/README.md#signout)
+- [Create](https://github.com/sarojregmi200/envdost/blob/main/README.md#create)
+- [Set](https://github.com/sarojregmi200/envdost/blob/main/README.md#set)
+- [Push](https://github.com/sarojregmi200/envdost/blob/main/README.md#push)
+- [Pull](https://github.com/sarojregmi200/envdost/blob/main/README.md#pull)
+- [Delete](https://github.com/sarojregmi200/envdost/blob/main/README.md#delete)
     - Project
     - Env
 
