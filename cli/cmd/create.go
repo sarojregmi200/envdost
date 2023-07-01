@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"sync"
 
 	cmdRunner "github.com/go-cmd/cmd"
 	"github.com/spf13/cobra"
@@ -31,10 +32,11 @@ var createCmd = &cobra.Command{
 // creates a new op vault with the name of the project
 // creates a new project in server with the name
 func createProject(projectName string) {
-
 	// loading animation before the process starts
-	// Animate = true // running the animation
-	// go	LoadingAnimation("Creating " + projectName + " project ")
+	var wg sync.WaitGroup
+	stopAnimation := make(chan struct{})
+	wg.Add(1)
+	go	LoadingAnimation("Creating " + projectName + " project ", stopAnimation ,&wg)
 
 	// creating one password vault
 	cmd:= cmdRunner.NewCmd("op", "vault", "create", projectName, "--session", UserSession)
@@ -47,10 +49,11 @@ func createProject(projectName string) {
 	}
 
 	if status.Complete{
-		Animate = false
+		close(stopAnimation)
 	}
 
 	fmt.Printf("\nProject %s created successfully.\n", projectName)
+	wg.Wait()
 }
 
 func init() {

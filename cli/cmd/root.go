@@ -142,7 +142,7 @@ func LoadingAnimation (txt string, stopAnimation <- chan struct{}, wg *sync.Wait
 			counter++
 			if counter >= 7{
 				counter = 0
-			}		
+			}
 			// to create a smooth animation
 			time.Sleep(100 * time.Millisecond) // pauses the loop for 500 ms
 		}
