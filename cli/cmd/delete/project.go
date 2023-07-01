@@ -45,7 +45,6 @@ var projectCmd = &cobra.Command{
 			return
 			}
 		}
-		
 		deleteProject(projects)
 	},
 }
