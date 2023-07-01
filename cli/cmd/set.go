@@ -23,12 +23,11 @@ var setCmd = &cobra.Command{
 	`,
 	Args: cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		setProject(args[0])
+		SetProject(args[0])
 	},
 }
 
-func setProject (projectName string) {
-	
+func SetProject (projectName string) {
 	// logins the user if not logged in
 	SetupLogin()
 
@@ -59,9 +58,7 @@ func setProject (projectName string) {
 		fmt.Printf("\nProject %s is selected successfully\n", projectName);
 
 		json.Unmarshal([]byte(data), &SelectedProject)
-	}
-
-	
+	}	
 }
 
 
