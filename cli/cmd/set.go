@@ -44,7 +44,7 @@ func SetProject (projectName string) {
 		return 
 	}
 	if(status.Exit == 1){
-		fmt.Println("No project named", projectName + " found ")
+		fmt.Println("More than one", projectName + " found.\nSelecting project with multiple same name is not available in this version.\nIt will be available in next version, till then try making project name different and keep an eye at github.com/sarojregmi200/envdost\nfor a new version. :)")
 		return 
 	}
 	if status.Complete{

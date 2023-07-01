@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 
 	cmdRunner "github.com/go-cmd/cmd"
 	"github.com/spf13/cobra"
@@ -138,9 +139,11 @@ func uploadFile(data []string, filePath string, fileName string){
 
 	args = append(args, data...)
 
-	// animation 
-	// Animate = true
-	// go LoadingAnimation("Uploading "+ fileName)
+	// animation
+	var wg sync.WaitGroup
+	stopAnimation := make(chan struct{})
+	wg.Add(1)
+	go LoadingAnimation("Uploading "+ fileName, stopAnimation, &wg)
 
 	addItemCmd := cmdRunner.NewCmd( "op",args...  );
  
@@ -150,9 +153,10 @@ func uploadFile(data []string, filePath string, fileName string){
 	}
 
 	if status.Complete{
-		// Animate = false
+		close(stopAnimation)
 		fmt.Printf("\nFile %s successfully uploaded under project %s \n", fileName , SelectedProject.Name)
 	}
+	wg.Wait()
 }
 
 func init() {
