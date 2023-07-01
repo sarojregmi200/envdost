@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"runtime"
@@ -41,7 +40,7 @@ func init() {
 }
 
 // used to signin the user if it is not signin
-func signinUser () User{
+func signinUser () {
 	// getting the previous user session
 	previousUserSession, sessionError := getEnv("USER_SESSION")
 	// if there are no error while getting the previous user session then setting it
@@ -54,12 +53,12 @@ func signinUser () User{
 		
 		json.Unmarshal([]byte(previousLogin), &LoggedInUser)
 		LoggedIn = true
-		return LoggedInUser // if user is already logged in no need to login again
+		return  // if user is already logged in no need to login again
 	}
 
 	// if user is logged in return that
 	if LoggedIn {
-		return LoggedInUser
+		return 
 	}
 	
 	// one password singin command
@@ -72,14 +71,14 @@ func signinUser () User{
 	// handeling error while running command
 	err := signinCmd.Run()
 	if err != nil{
-		fmt.Println("Error while signing up the user")
-		log.Fatal(err)
+		fmt.Println("Sorry, that did not work. Try again with different credentials.") 
+		return 
 	}
 	UserSession = out.String()
 
 	setLoggedInUser() // sets the LoggedInuser global variable
 
-	return LoggedInUser
+	return 
 }
 
 // sets the LoggedIn user details from the given session id 
@@ -88,7 +87,6 @@ func setLoggedInUser () {
 	tokenCommand, err := exec.Command("op", "whoami","--session", UserSession, "--format=json").Output()
 	if(err != nil){
 		fmt.Println("Error while getting the user info")
-		log.Fatal(err)	
 	}
 
 	// parsing the output 
@@ -216,10 +214,11 @@ func SetEnv(envVariable string, envVariableValue string) error {
 
 
 // prompts the user to login if not logged in
-func SetupLogin(){
+func SetupLogin() {
 	if LoggedIn == false{
-		signinUser() // will set the session id as well 
+	 signinUser() // will set the session id as well 
 	} 
+
 }
 
 // looks for selected project and updates the selected project if not found panics
