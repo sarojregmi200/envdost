@@ -5,6 +5,7 @@ import (
 	root "envdost/cmd"
 	"fmt"
 	"strings"
+	"sync"
 
 	cmdRunner "github.com/go-cmd/cmd"
 
@@ -30,19 +31,19 @@ var projectCmd = &cobra.Command{
 		// user login
 		root.SetupLogin()
 
-		// setting up the selected project
-		selectingError := root.SetSelectedProject()
-
-		if selectingError !=nil{
-		fmt.Println(selectingError)
-		return
-		}
 		// creating a project array and then passing to delete project
 		var projects [] root.Project
 		if len(args) > 0{
 			projects = findProject(args[0]) 
 		}else{
 			projects = append(projects, root.SelectedProject) 
+			// setting up the selected project
+			selectingError := root.SetSelectedProject()
+
+			if selectingError !=nil{
+			fmt.Println(selectingError)
+			return
+			}
 		}
 		
 		deleteProject(projects)
@@ -51,18 +52,23 @@ var projectCmd = &cobra.Command{
 
 
 func deleteProject (projects []root.Project){
+	// waitgroup to run animation separately
 	for _, project := range projects{
+		var wg sync.WaitGroup
+		stopAnimation := make(chan struct{})
+		wg.Add(1)
 		if project.Name == "" || project.Id == ""{
 			continue
 		}
-		// root.Animate = true
-		// go root.LoadingAnimation("Deleting project"+ project.Name)
+		go root.LoadingAnimation("Deleting project"+ project.Name, stopAnimation, &wg)
 		
 		deleteProCmd := cmdRunner.NewCmd("op", "vault", "delete", project.Id ,"--session", root.UserSession)
 		status :=<- deleteProCmd.Start()
 		
 		if status.Error != nil{
+			close(stopAnimation)
 			fmt.Println("\nSry, cannot delete project", project.Name)
+			continue
 		}
 		
 		if status.Complete {
@@ -73,16 +79,23 @@ func deleteProject (projects []root.Project){
 			if envError != nil{
 				fmt.Println("Error while removing selected project from the session, please select another project with set command before using anything else")
 			}
+			close(stopAnimation)
 			continue
 		}
+		wg.Wait()
 	}
+
 }
 func findProject(projectName string) []root.Project{
 	var allProjects []root.Project 
 	var projects [] root.Project
+	
 	// animation
-	// root.Animate = true
-	// go root.LoadingAnimation("Searching project "+ projectName)
+	var wg sync.WaitGroup
+	stopAnimation := make(chan struct{})
+	wg.Add(1)
+	
+	go root.LoadingAnimation("Searching project "+ projectName, stopAnimation, &wg)
 	
 	// finding the project
 	findProjectCmd := cmdRunner.NewCmd("op", "vault", "list", "--session", root.UserSession, "--format=json")
@@ -91,10 +104,12 @@ func findProject(projectName string) []root.Project{
 
 	if status.Error != nil{ 
 		fmt.Println( "Cannot find the project with the name ", projectName)
+		close(stopAnimation)
 		return allProjects
 	}
 	if(status.Exit == 1){
 		fmt.Println("No project named", projectName + " found ")
+		close(stopAnimation)
 		return allProjects
 	}
 	if status.Complete{
@@ -109,11 +124,13 @@ func findProject(projectName string) []root.Project{
 
 		if len(projects) > 0{
 			fmt.Printf("\nProject %s is found %d times \n", projectName, len(projects));
+			close(stopAnimation)
 		}else{
 			fmt.Printf("\nProject %s is not found \n", projectName);
+			close(stopAnimation)
 		}
 	}
-
+	wg.Wait()
 	return projects
 }
 

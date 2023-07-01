@@ -59,7 +59,6 @@ func pullFile (fileName string, pullAll bool){
 	// making a channel to stop animation 
 	stopAnimation := make(chan struct{})
 	
-
 	if pullAll {
 		wg.Add(1)
 		go LoadingAnimation("looking for config files in project "+ SelectedProject.Name, stopAnimation, &wg)
