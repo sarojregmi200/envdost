@@ -59,7 +59,7 @@ func deleteProject (projects []root.Project){
 		if project.Name == "" || project.Id == ""{
 			continue
 		}
-		go root.LoadingAnimation("Deleting project"+ project.Name, stopAnimation, &wg)
+		go root.LoadingAnimation("Deleting project "+ project.Name, stopAnimation, &wg)
 		
 		deleteProCmd := cmdRunner.NewCmd("op", "vault", "delete", project.Id ,"--session", root.UserSession)
 		status :=<- deleteProCmd.Start()

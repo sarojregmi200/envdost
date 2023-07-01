@@ -18,9 +18,9 @@ cli:
   ✔ fix the pull all msg @done(23-07-01 12:29)
   ✔ fix the line break problem @done(23-07-01 12:29)
   ✔ Error running multiple create command animation error @done(23-07-01 12:29)
-  ☐ create logout command
-  ☐ fix the login with time and sesson based timeout
+  ✔ create logout command @done(23-07-01 13:42)
   
   v2:
+  ☐ fix the login with time and sesson based timeout
   ☐ search for existing projects if projects not found
   ☐ multiple same name project set command
