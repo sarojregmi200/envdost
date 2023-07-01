@@ -40,7 +40,7 @@ var signoutCmd = &cobra.Command{
 		if loginToken != nil || userSession != nil{
 			fmt.Println("An error occured while signing out", LoggedInUser.Email)
 		}
-		fmt.Println("User ", LoggedInUser.Email , "is logged out successfully.")
+		fmt.Println("User", LoggedInUser.Email , "is logged out successfully.")
 		close(stopAnimation)
 		wg.Wait()
 	},

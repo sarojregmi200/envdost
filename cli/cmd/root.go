@@ -71,28 +71,39 @@ func signinUser () {
 	// handeling error while running command
 	err := signinCmd.Run()
 	if err != nil{
-		fmt.Println("Sorry, that did not work. Try again with different credentials.") 
+		fmt.Println("\nSorry, that did not work. Try again with different credentials.")
+		  
 		return 
 	}
 	UserSession = out.String()
-
+	
 	setLoggedInUser() // sets the LoggedInuser global variable
-
-	return 
+	
+	
+	return 	
 }
 
 // sets the LoggedIn user details from the given session id 
 func setLoggedInUser () {
+
+	var wg sync.WaitGroup
+	stopAnimation := make(chan struct{})
+	wg.Add(1)
+	go LoadingAnimation("Logging in", stopAnimation, &wg)
+
 	// gets the user info from the session token
 	tokenCommand, err := exec.Command("op", "whoami","--session", UserSession, "--format=json").Output()
 	if(err != nil){
-		fmt.Println("Error while getting the user info")
+		fmt.Println("\nError while getting the user info")
+		close(stopAnimation)
+		return
 	}
 
 	// parsing the output 
 	parsingErr :=	json.Unmarshal(tokenCommand, &LoggedInUser)
 	if parsingErr != nil{
-		fmt.Println(parsingErr)
+		close(stopAnimation)
+		return
 	}
 	LoggedIn = true
 
@@ -100,8 +111,10 @@ func setLoggedInUser () {
 	tokenError :=SetEnv("LOGIN_TOKEN", string(tokenCommand[:]))
 	sessionError :=SetEnv("USER_SESSION", UserSession)
 	if tokenError != nil || sessionError != nil{
-		fmt.Println("Session storage for terminal is turned off")
+		fmt.Println("\nSession storage for terminal is turned off")
 	}
+	close(stopAnimation)
+	wg.Wait() 
 }
 
 // user types and definitions

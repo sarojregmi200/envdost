@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
@@ -23,16 +24,24 @@ var signinCmd = &cobra.Command{
 	prompts you to verify yourself via password, fingerprint or faceid
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
+		var wgNew sync.WaitGroup
+		stopAnimation := make(chan struct{})
+		wgNew.Add(1)
+		
+		go LoadingAnimation("Checking previous logins", stopAnimation, &wgNew)
 		getPreviousLoginData()
 		if LoggedIn{
-			fmt.Println("You are already loggedin as", LoggedInUser.Email)
+			fmt.Println("\nYou are already loggedin as", LoggedInUser.Email)
+			close(stopAnimation)
 			return
 		}
+		close(stopAnimation)
+		wgNew.Wait()
+		
 		// main signin function
 		SetupLogin()
 		
-		fmt.Println("Successfully signin as:", LoggedInUser.Email)
-		
+		fmt.Println("\nSuccessfully signin as:", LoggedInUser.Email)
 	},
 }
 
